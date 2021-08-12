@@ -1,0 +1,6 @@
+local2global.example.rand\_rotate\_patches
+==========================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: rand_rotate_patches

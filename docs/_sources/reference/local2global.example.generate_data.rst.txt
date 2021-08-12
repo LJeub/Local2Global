@@ -1,0 +1,6 @@
+local2global.example.generate\_data
+===================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: generate_data

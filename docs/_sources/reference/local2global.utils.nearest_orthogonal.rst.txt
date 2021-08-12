@@ -1,0 +1,6 @@
+local2global.utils.nearest\_orthogonal
+======================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: nearest_orthogonal

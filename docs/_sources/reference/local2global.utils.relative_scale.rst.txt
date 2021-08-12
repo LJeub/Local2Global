@@ -1,0 +1,6 @@
+local2global.utils.relative\_scale
+==================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: relative_scale

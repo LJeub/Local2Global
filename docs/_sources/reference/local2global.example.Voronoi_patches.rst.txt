@@ -1,0 +1,6 @@
+local2global.example.Voronoi\_patches
+=====================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: Voronoi_patches

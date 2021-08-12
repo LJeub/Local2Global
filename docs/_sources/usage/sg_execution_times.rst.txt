@@ -1,0 +1,12 @@
+
+:orphan:
+
+.. _sphx_glr_usage_sg_execution_times:
+
+Computation times
+=================
+**00:02.659** total execution time for **usage** files:
+
++-----------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_usage_usage.py` (``usage.py``) | 00:02.659 | 0.0 MB |
++-----------------------------------------------+-----------+--------+

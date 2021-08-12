@@ -1,0 +1,6 @@
+local2global.test\_local2global.iter\_seed
+==========================================
+
+.. currentmodule:: local2global.test_local2global
+
+.. autofunction:: iter_seed

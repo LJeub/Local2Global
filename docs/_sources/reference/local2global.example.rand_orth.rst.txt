@@ -1,0 +1,6 @@
+local2global.example.rand\_orth
+===============================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: rand_orth

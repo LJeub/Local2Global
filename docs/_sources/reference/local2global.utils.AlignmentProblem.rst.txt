@@ -1,0 +1,53 @@
+local2global.utils.AlignmentProblem
+===================================
+
+.. currentmodule:: local2global.utils
+
+.. autoclass:: AlignmentProblem
+   :members:
+   :inherited-members:
+   :show-inheritance:
+   :exclude-members: __init__,  dim, n_nodes, n_patches, rotations, scales, shifts, verbose,
+
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~AlignmentProblem.__init__
+      ~AlignmentProblem.calc_synchronised_rotations
+      ~AlignmentProblem.calc_synchronised_scales
+      ~AlignmentProblem.calc_synchronised_translations
+      ~AlignmentProblem.get_aligned_embedding
+      ~AlignmentProblem.load
+      ~AlignmentProblem.mean_embedding
+      ~AlignmentProblem.rotate_patches
+      ~AlignmentProblem.save_embedding
+      ~AlignmentProblem.save_patches
+      ~AlignmentProblem.scale_patches
+      ~AlignmentProblem.translate_patches
+      ~AlignmentProblem.weight
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~AlignmentProblem.dim
+      ~AlignmentProblem.n_nodes
+      ~AlignmentProblem.n_patches
+      ~AlignmentProblem.rotations
+      ~AlignmentProblem.scales
+      ~AlignmentProblem.shifts
+      ~AlignmentProblem.verbose
+   
+   
+

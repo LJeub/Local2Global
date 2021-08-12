@@ -1,0 +1,6 @@
+local2global.utils.relative\_orthogonal\_transform
+==================================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: relative_orthogonal_transform

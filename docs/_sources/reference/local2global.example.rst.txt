@@ -1,0 +1,40 @@
+﻿local2global.example
+====================
+
+.. automodule:: local2global.example
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+   
+      Voronoi_patches
+      add_noise
+      generate_data
+      noise_profile
+      plot_reconstruction
+      rand_orth
+      rand_rotate_patches
+      rand_scale_patches
+      rand_shift_patches
+      save_data
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

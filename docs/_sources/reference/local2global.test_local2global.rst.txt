@@ -1,0 +1,41 @@
+﻿local2global.test\_local2global
+===============================
+
+.. automodule:: local2global.test_local2global
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+   
+      iter_seed
+      seed
+      test_calc_synchronised_rotations
+      test_calc_synchronised_scales
+      test_calc_synchronised_translations
+      test_get_aligned_embedding
+      test_noisy_calc_synchronised_rotations
+      test_noisy_calc_synchronised_scales
+      test_noisy_calc_synchronised_translations
+      test_noisy_get_aligned_embedding
+      test_stability
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+
+

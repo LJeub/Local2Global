@@ -1,0 +1,354 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>Usage &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tests" href="../test.html" />
+    <link rel="prev" title="Installation" href="../installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#generate-synthetic-test-data-and-patches">Generate synthetic test data and patches</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#local2global-algorithm">Local2global algorithm</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-alignment-problem">Set up alignment problem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#perturb-the-patch-embeddings">Perturb the patch embeddings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recover-global-embedding">Recover global embedding</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Usage</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/usage/usage.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-usage-usage-py"><span class="std std-ref">here</span></a>
+to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="usage">
+<span id="sphx-glr-usage-usage-py"></span><h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<p>The usage example assumes the package is imported as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">local2global</span> <span class="k">as</span> <span class="nn">l2g</span>
+</pre></div>
+</div>
+<div class="section" id="generate-synthetic-test-data-and-patches">
+<h2>Generate synthetic test data and patches<a class="headerlink" href="#generate-synthetic-test-data-and-patches" title="Permalink to this headline">¶</a></h2>
+<p>The goal for the local2global algorithm is to transform a set of separate patch embeddings into a global node embedding.
+The assumptions are that the patch embeddings perturbed parts of a global node embedding where the perturbations consist
+of scaling, rotation, reflection, translation and random noise. To work, the patches need to overlap such that the
+patch graph forms a single connected component where we consider a pair of patches to be connected if they share
+at least <code class="docutils literal notranslate"><span class="pre">dim</span> <span class="pre">+</span> <span class="pre">1</span></code> nodes (<code class="docutils literal notranslate"><span class="pre">dim</span></code> is the embedding dimension).</p>
+<p>For illustration and testing purposes, the package contains code to generate artificial test data
+(see <a class="reference internal" href="../reference/local2global.example.html#module-local2global.example" title="local2global.example"><code class="xref py py-mod docutils literal notranslate"><span class="pre">local2global.example</span></code></a>).
+This is not imported by default and to make it available use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">local2global.example</span> <span class="k">as</span> <span class="nn">ex</span>
+</pre></div>
+</div>
+<p>Also import matplotlib to visualise the results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<p>First generate a ground-truth embedding using <a class="reference internal" href="../reference/local2global.example.generate_data.html#local2global.example.generate_data" title="local2global.example.generate_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">generate_data()</span></code></a>. In this example,
+we generate data with 5 clusters, where each cluster has a maximum size of 300 points, points within each cluster are
+normally distributed with a standard deviation of 0.2, and cluster centers are uniformly spaced on the unit circle.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">points</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">generate_data</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Visualise the data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">s</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="usage" class="sphx-glr-single-img" src="../_images/sphx_glr_usage_001.png" />
+<p>Next, we split the test data into 10 overlapping patches using <a class="reference internal" href="../reference/local2global.example.Voronoi_patches.html#local2global.example.Voronoi_patches" title="local2global.example.Voronoi_patches"><code class="xref py py-func docutils literal notranslate"><span class="pre">Voronoi_patches()</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">patches</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">Voronoi_patches</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">kmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In this case we first identify the patch centers using k-means clustering and assign points to the patch with the
+nearest center and any other patch whose center is within 1.5 times the distance to the nearest center. Patches may be
+expanded further to satisfy some connectivity constraints on the patch graph
+(see <a class="reference internal" href="../reference/local2global.example.Voronoi_patches.html#local2global.example.Voronoi_patches" title="local2global.example.Voronoi_patches"><code class="xref py py-func docutils literal notranslate"><span class="pre">Voronoi_patches()</span></code></a>)</p>
+</div>
+<div class="section" id="local2global-algorithm">
+<h2>Local2global algorithm<a class="headerlink" href="#local2global-algorithm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="set-up-alignment-problem">
+<h3>Set up alignment problem<a class="headerlink" href="#set-up-alignment-problem" title="Permalink to this headline">¶</a></h3>
+<p>The main interface to the local2global algorithm is provided by <a class="reference internal" href="../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem" title="local2global.utils.AlignmentProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentProblem</span></code></a> which
+weights each patch edge equally and <a class="reference internal" href="../reference/local2global.utils.WeightedAlignmentProblem.html#local2global.utils.WeightedAlignmentProblem" title="local2global.utils.WeightedAlignmentProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">WeightedAlignmentProblem</span></code></a> which weights patch
+edges by the size of the patch overlap and can be more robust when patch overlaps are heterogeneous. Both classes
+implement the same interface and expect a list of <a class="reference internal" href="../reference/local2global.utils.Patch.html#local2global.utils.Patch" title="local2global.utils.Patch"><code class="xref py py-class docutils literal notranslate"><span class="pre">Patch</span></code></a> objects (such as generated by
+<a class="reference internal" href="../reference/local2global.example.Voronoi_patches.html#local2global.example.Voronoi_patches" title="local2global.example.Voronoi_patches"><code class="xref py py-func docutils literal notranslate"><span class="pre">Voronoi_patches()</span></code></a>) as the main input and accept some other options to control the
+behaviour. Here we use the default options:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">problem</span> <span class="o">=</span> <span class="n">l2g</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="perturb-the-patch-embeddings">
+<h3>Perturb the patch embeddings<a class="headerlink" href="#perturb-the-patch-embeddings" title="Permalink to this headline">¶</a></h3>
+<p>For testing we add some random rotations/reflections, shifts and normally distributed noise to the patch embeddings:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">true_rotations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+<span class="n">true_shifts</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">shift_scale</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ex</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Visualise the results:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">p</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.5</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="usage" class="sphx-glr-single-img" src="../_images/sphx_glr_usage_002.png" />
+<p>For comparison we also set up a weighted problem with the same noise:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">weighted_problem</span> <span class="o">=</span> <span class="n">l2g</span><span class="o">.</span><span class="n">WeightedAlignmentProblem</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="recover-global-embedding">
+<h3>Recover global embedding<a class="headerlink" href="#recover-global-embedding" title="Permalink to this headline">¶</a></h3>
+<p>Use</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">recovered_points</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">()</span>
+<span class="n">recovered_points_weighted</span> <span class="o">=</span> <span class="n">weighted_problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>to run the local2global algorithm and reconstruct the global embedding. The results are cached and subsequent calls to
+<a class="reference internal" href="../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.get_aligned_embedding" title="local2global.utils.AlignmentProblem.get_aligned_embedding"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_aligned_embedding()</span></code></a> return the cached result without rerunning the
+algorithm unless run with <code class="docutils literal notranslate"><span class="pre">realign=True</span></code>. We can visualise the reconstruction error using</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">error</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">plot_reconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unweighted (Procrustes error: </span><span class="si">{</span><span class="n">error</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="unweighted (Procrustes error: 0.000325)" class="sphx-glr-single-img" src="../_images/sphx_glr_usage_003.png" />
+<p>and</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">error_weighted</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">plot_reconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">weighted_problem</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weighted (Procrustes error: </span><span class="si">{</span><span class="n">error_weighted</span><span class="si">:</span><span class="s2">.3g</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="weighted (Procrustes error: 0.000199)" class="sphx-glr-single-img" src="../_images/sphx_glr_usage_004.png" />
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.659 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-usage-usage-py">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/c90e4cd34a05823ce0cbf1807d16de22/usage.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">usage.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/096cf88c83a05ed81c348a8f70cd4fef/usage.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">usage.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="../test.html" class="btn btn-neutral float-right" title="Tests" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,823 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>local2global.utils &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>local2global.utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for local2global.utils</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Implementation of local2global algorithm&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">scipy</span> <span class="k">as</span> <span class="nn">sp</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span> <span class="k">as</span> <span class="n">ss</span>
+<span class="kn">from</span> <span class="nn">scipy.linalg</span> <span class="kn">import</span> <span class="n">orthogonal_procrustes</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.sparse.linalg</span> <span class="kn">import</span> <span class="n">lsqr</span><span class="p">,</span> <span class="n">lsmr</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">procrustes</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="n">rg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">()</span>
+<span class="n">eps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+
+
+<div class="viewcode-block" id="seed"><a class="viewcode-back" href="../../reference/local2global.utils.seed.html#local2global.utils.seed">[docs]</a><span class="k">def</span> <span class="nf">seed</span><span class="p">(</span><span class="n">new_seed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Change seed of random number generator.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        new_seed: New seed value</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">rg</span>
+    <span class="n">rg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">new_seed</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ensure_extension"><a class="viewcode-back" href="../../reference/local2global.utils.ensure_extension.html#local2global.utils.ensure_extension">[docs]</a><span class="k">def</span> <span class="nf">ensure_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">extension</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    check filename for extension and add it if necessary</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        filename: input filename</span>
+<span class="sd">        extension: desired extension (including `.`)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        filename with extension added</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if filename has the wrong extension</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">filename</span><span class="o">.</span><span class="n">with_suffix</span><span class="p">(</span><span class="n">extension</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">filename</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="n">extension</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;filename should have extension </span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s2">, not </span><span class="si">{</span><span class="n">filename</span><span class="o">.</span><span class="n">suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span></div>
+
+
+<div class="viewcode-block" id="procrustes_error"><a class="viewcode-back" href="../../reference/local2global.utils.procrustes_error.html#local2global.utils.procrustes_error">[docs]</a><span class="k">def</span> <span class="nf">procrustes_error</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    compute the procrustes alignment error between two sets of coordinates</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coordinates1: First set of coordinates (array-like)</span>
+<span class="sd">        coordinates2: Second set of coordinates (array-like)</span>
+
+<span class="sd">    Note that the two sets of coordinates need to have the same shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">procrustes</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">)[</span><span class="mi">2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="transform_error"><a class="viewcode-back" href="../../reference/local2global.utils.transform_error.html#local2global.utils.transform_error">[docs]</a><span class="k">def</span> <span class="nf">transform_error</span><span class="p">(</span><span class="n">transforms</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the recovery error based on tracked transformations.</span>
+
+<span class="sd">    After recovery, all transformations should be constant across patches</span>
+<span class="sd">    as we can recover the embedding only up to a global scaling/rotation/translation.</span>
+<span class="sd">    The error is computed as the mean over transformation elements of the standard deviation over patches.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        transforms: list of transforms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">transforms</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="orthogonal_MSE_error"><a class="viewcode-back" href="../../reference/local2global.utils.orthogonal_MSE_error.html#local2global.utils.orthogonal_MSE_error">[docs]</a><span class="k">def</span> <span class="nf">orthogonal_MSE_error</span><span class="p">(</span><span class="n">rots1</span><span class="p">,</span> <span class="n">rots2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the MSE between two sets of orthogonal transformations up to a global transformation</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        rots1: First list of orthogonal matrices</span>
+<span class="sd">        rots2: Second list of orthogonal matrices</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rots1</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">rots1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rots1</span><span class="p">)</span>
+    <span class="n">rots1</span> <span class="o">=</span> <span class="n">rots1</span><span class="o">.</span><span class="n">transpose</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">rots2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">rots2</span><span class="p">)</span>
+    <span class="n">combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">rots1</span> <span class="o">@</span> <span class="n">rots2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">combined</span><span class="p">)</span>
+    <span class="k">return</span> <span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="n">dim</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">s</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_cov_svd</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute SVD of covariance matrix between two sets of coordinates</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coordinates1: First set of coordinates (array-like)</span>
+<span class="sd">        coordinates2: Second set of coordinates (array-like)</span>
+
+<span class="sd">    Note that the two sets of coordinates need to have the same shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">coordinates1</span> <span class="o">=</span> <span class="n">coordinates1</span> <span class="o">-</span> <span class="n">coordinates1</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">coordinates2</span> <span class="o">=</span> <span class="n">coordinates2</span> <span class="o">-</span> <span class="n">coordinates2</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">coordinates1</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">coordinates2</span>
+    <span class="k">return</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">cov</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="relative_orthogonal_transform"><a class="viewcode-back" href="../../reference/local2global.utils.relative_orthogonal_transform.html#local2global.utils.relative_orthogonal_transform">[docs]</a><span class="k">def</span> <span class="nf">relative_orthogonal_transform</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Find the best orthogonal transformation aligning two sets of coordinates for the same nodes</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coordinates1: First set of coordinates (array-like)</span>
+<span class="sd">        coordinates2: Second set of coordinates (array-like)</span>
+
+<span class="sd">    Note that the two sets of coordinates need to have the same shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Note this is completely equivalent to the approach in</span>
+    <span class="c1"># &quot;Closed-Form Solution of Absolute Orientation using Orthonormal Matrices&quot;</span>
+    <span class="c1"># Journal of the Optical Society of America A · July 1988</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">Vh</span> <span class="o">=</span> <span class="n">_cov_svd</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">U</span> <span class="o">@</span> <span class="n">Vh</span></div>
+
+
+<div class="viewcode-block" id="nearest_orthogonal"><a class="viewcode-back" href="../../reference/local2global.utils.nearest_orthogonal.html#local2global.utils.nearest_orthogonal">[docs]</a><span class="k">def</span> <span class="nf">nearest_orthogonal</span><span class="p">(</span><span class="n">mat</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute nearest orthogonal matrix to a given input matrix</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        mat: input matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">U</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">Vh</span> <span class="o">=</span> <span class="n">sp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">svd</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">U</span> <span class="o">@</span> <span class="n">Vh</span></div>
+
+
+<div class="viewcode-block" id="relative_scale"><a class="viewcode-back" href="../../reference/local2global.utils.relative_scale.html#local2global.utils.relative_scale">[docs]</a><span class="k">def</span> <span class="nf">relative_scale</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">coordinates2</span><span class="p">,</span> <span class="n">clamp</span><span class="o">=</span><span class="mf">1e8</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    compute relative scale of two sets of coordinates for the same nodes</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        coordinates1: First set of coordinates (array-like)</span>
+<span class="sd">        coordinates2: Second set of coordinates (array-like)</span>
+
+<span class="sd">    Note that the two sets of coordinates need to have the same shape.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scale1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coordinates1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coordinates1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="n">scale2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">coordinates2</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">coordinates2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">scale1</span> <span class="o">&gt;</span> <span class="n">clamp</span> <span class="o">*</span> <span class="n">scale2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;extremely large scale clamped&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">clamp</span>
+    <span class="k">if</span> <span class="n">scale1</span> <span class="o">*</span> <span class="n">clamp</span> <span class="o">&lt;</span> <span class="n">scale2</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;extremely small scale clamped&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="o">/</span><span class="n">clamp</span>
+    <span class="k">return</span> <span class="n">scale1</span> <span class="o">/</span> <span class="n">scale2</span></div>
+
+
+<div class="viewcode-block" id="Patch"><a class="viewcode-back" href="../../reference/local2global.utils.Patch.html#local2global.utils.Patch">[docs]</a><span class="k">class</span> <span class="nc">Patch</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for patch embedding</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">index</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;mapping of node index to patch coordinate index&quot;&quot;&quot;</span>
+
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;patch embedding coordinates&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Patch.__init__"><a class="viewcode-back" href="../../reference/local2global.utils.Patch.html#local2global.utils.Patch.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise a patch from a list of nodes and corresponding coordinates</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes: Iterable of integer node indeces for patch</span>
+<span class="sd">            coordinates: Array-like of node coordinates of shape (len(nodes), dim)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">):</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">nodes</span><span class="p">)}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">coordinates</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        shape of patch coordinates</span>
+
+<span class="sd">        (`shape[0]` is the number of nodes in the patch</span>
+<span class="sd">        and `shape[1]` is the embedding dimension)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="o">.</span><span class="n">shape</span>
+
+<div class="viewcode-block" id="Patch.get_coordinates"><a class="viewcode-back" href="../../reference/local2global.utils.Patch.html#local2global.utils.Patch.get_coordinates">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get coordinates for a list of nodes</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            nodes: Iterable of node indeces</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">],</span> <span class="p">:]</span></div>
+
+<div class="viewcode-block" id="Patch.get_coordinate"><a class="viewcode-back" href="../../reference/local2global.utils.Patch.html#local2global.utils.Patch.get_coordinate">[docs]</a>    <span class="k">def</span> <span class="nf">get_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get coordinate for a single node</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: Integer node index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">node</span><span class="p">],</span> <span class="p">:]</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return a copy of the patch&quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span></div>
+
+
+<div class="viewcode-block" id="AlignmentProblem"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem">[docs]</a><span class="k">class</span> <span class="nc">AlignmentProblem</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Implements the standard local2global algorithm using an unweighted patch graph</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_nodes</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;total number of nodes&quot;&quot;&quot;</span>
+
+    <span class="n">n_patches</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;number of patches&quot;&quot;&quot;</span>
+
+    <span class="n">dim</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;embedding dimension&quot;&quot;&quot;</span>
+
+    <span class="n">scales</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;tracks scale transformations applied to patches (updated by :meth:`scale_patches`)&quot;&quot;&quot;</span>
+
+    <span class="n">rotations</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;tracks orthogonal transformations applied to patches (updated by :meth:`rotate_patches`)&quot;&quot;&quot;</span>
+
+    <span class="n">shifts</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="sd">&quot;&quot;&quot;tracks translation transformations applied to patches (updated by :meth:`scale_patches`, </span>
+<span class="sd">       :meth:`rotate_patches`, and :meth:`translate_patches`)&quot;&quot;&quot;</span>
+
+    <span class="n">verbose</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="sd">&quot;&quot;&quot;print debug output if `True`&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="AlignmentProblem.weight"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.weight">[docs]</a>    <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the weighting factor for a pair of patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i: First patch index</span>
+<span class="sd">            j: Second patch index</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            1</span>
+
+<span class="sd">        Override this in subclasses for weighted alignment</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.__init__"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patches</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Patch</span><span class="p">],</span> <span class="n">patch_edges</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">min_overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">self_loops</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the alignment problem with a list of patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            patches: List of patches to synchronise</span>
+<span class="sd">            patch_edges: if provided, only compute relative transformations for given patch edges (all pairs of patches</span>
+<span class="sd">                         with at least ``min_overlap`` points in common are included by default)</span>
+<span class="sd">            min_overlap (int): minimum number of points in the overlap required for two patches to be considered</span>
+<span class="sd">                               connected (defaults to `dim+1`) where `dim` is the embedding dimension of the patches</span>
+<span class="sd">            copy_data (bool): if ``True``, input patches are copied (default: ``True``)</span>
+<span class="sd">            self_loops (bool): if ``True``, self-loops from a patch to itself are included in the synchronisation problem</span>
+<span class="sd">                               (default: ``False``)</span>
+<span class="sd">            verbose(bool): if True print diagnostic information (default: ``False``)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">copy_data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span> <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches</span> <span class="o">=</span> <span class="n">patches</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aligned_embedding</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">min_overlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">min_overlap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="c1"># create an index for the patch membership of each node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_index</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">patch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">patch</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="c1"># find patch overlaps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">patch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">patch</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                    <span class="k">if</span> <span class="n">self_loops</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">j</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># restrict to patch edges if provided</span>
+        <span class="k">if</span> <span class="n">patch_edges</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span> <span class="o">=</span> <span class="p">{</span><span class="n">e</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">e</span><span class="p">]</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">patch_edges</span><span class="p">}</span>
+
+        <span class="c1"># remove small overlaps</span>
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">e</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">min_overlap</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">patch_edges</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">e</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Patch edges do not satisfy minimum overlap&quot;</span><span class="p">)</span>
+
+        <span class="c1"># find patch degrees</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_degrees</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patch_degrees</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">patch_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="n">patch_graph</span><span class="o">.</span><span class="n">add_edges_from</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">number_connected_components</span><span class="p">(</span><span class="n">patch_graph</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;patch graph is not connected&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;mean patch degree: </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_degrees</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.scale_patches"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.scale_patches">[docs]</a>    <span class="k">def</span> <span class="nf">scale_patches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale_factors</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Synchronise scales of the embeddings for each patch</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scale_factors: if provided apply the given scales instead of synchronising</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">scale_factors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scale_factors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span> <span class="o">/</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_synchronised_scales</span><span class="p">()]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">scale</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">scale_factors</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">*=</span> <span class="n">scale</span>
+            <span class="c1"># track transformations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scales</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*=</span> <span class="n">scale</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.calc_synchronised_scales"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.calc_synchronised_scales">[docs]</a>    <span class="k">def</span> <span class="nf">calc_synchronised_scales</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_scale</span><span class="o">=</span><span class="mf">1e8</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute the scaling transformations that best align the patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_scale: maximum allowed scale (all scales are clipped to the range [``1/max_scale``, ``max_scale``])</span>
+<span class="sd">                       (default: 1e8)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list of scales</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">scaling_mat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="p">(</span><span class="k">lambda</span> <span class="n">ov1</span><span class="p">,</span> <span class="n">ov2</span><span class="p">:</span> <span class="n">relative_scale</span><span class="p">(</span><span class="n">ov1</span><span class="p">,</span> <span class="n">ov2</span><span class="p">,</span> <span class="n">max_scale</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synchronise</span><span class="p">(</span><span class="n">scaling_mat</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">vec</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span>
+        <span class="n">vec</span> <span class="o">/=</span> <span class="n">vec</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">vec</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">vec</span><span class="p">,</span> <span class="n">a_min</span><span class="o">=</span><span class="mi">1</span><span class="o">/</span><span class="n">max_scale</span><span class="p">,</span> <span class="n">a_max</span><span class="o">=</span><span class="n">max_scale</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">vec</span><span class="p">)</span>  <span class="c1"># avoid blow-up</span>
+        <span class="k">return</span> <span class="n">vec</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.rotate_patches"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.rotate_patches">[docs]</a>    <span class="k">def</span> <span class="nf">rotate_patches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rotations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;align the rotation/reflection of all patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            rotations: If provided, apply the given transformations instead of synchronizing patch rotations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">rotations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rotations</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">rot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_synchronised_rotations</span><span class="p">())</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">rot</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">rotations</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">@</span> <span class="n">rot</span><span class="o">.</span><span class="n">T</span>
+            <span class="c1"># track transformations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rotations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">rot</span><span class="o">.</span><span class="n">T</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">rot</span><span class="o">.</span><span class="n">T</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.calc_synchronised_rotations"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.calc_synchronised_rotations">[docs]</a>    <span class="k">def</span> <span class="nf">calc_synchronised_rotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute the orthogonal transformations that best align the patches&quot;&quot;&quot;</span>
+        <span class="n">rots</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_transform_matrix</span><span class="p">(</span><span class="n">relative_orthogonal_transform</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="n">symmetric_weights</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">vecs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_synchronise</span><span class="p">(</span><span class="n">rots</span><span class="p">,</span> <span class="n">blocksize</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mat</span> <span class="ow">in</span> <span class="n">vecs</span><span class="p">:</span>
+            <span class="n">mat</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">nearest_orthogonal</span><span class="p">(</span><span class="n">mat</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vecs</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.translate_patches"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.translate_patches">[docs]</a>    <span class="k">def</span> <span class="nf">translate_patches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translations</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;align the patches by translation</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            translations: If provided, apply the given translations instead of synchronizing</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">translations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">translations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_synchronised_translations</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">translations</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">+=</span> <span class="n">t</span>
+            <span class="c1"># keep track of transformations</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shifts</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">t</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.calc_synchronised_translations"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.calc_synchronised_translations">[docs]</a>    <span class="k">def</span> <span class="nf">calc_synchronised_translations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute translations that best align the patches&quot;&quot;&quot;</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">val</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">),</span> <span class="n">overlap</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p1</span><span class="p">)</span>
+            <span class="n">val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">col</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p2</span><span class="p">)</span>
+            <span class="n">val</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">b</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">p1</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">overlap</span><span class="p">)</span>
+                              <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">p2</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">overlap</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">coo_matrix</span><span class="p">((</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="n">A</span><span class="o">.</span><span class="n">tocsr</span><span class="p">()</span>
+        <span class="n">translations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">):</span>
+            <span class="n">translations</span><span class="p">[:,</span> <span class="n">d</span><span class="p">]</span> <span class="o">=</span> <span class="n">lsmr</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">b</span><span class="p">[:,</span> <span class="n">d</span><span class="p">],</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span> <span class="n">btol</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># TODO: probably doesn&#39;t need to be that accurate, this is for testing</span>
+        <span class="k">return</span> <span class="n">translations</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.mean_embedding"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.mean_embedding">[docs]</a>    <span class="k">def</span> <span class="nf">mean_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Compute node embeddings as the centroid over patch embeddings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">n_nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">patch_list</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_index</span><span class="p">):</span>
+            <span class="n">embedding</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">p</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinate</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">patch_list</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">embedding</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.get_aligned_embedding"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.get_aligned_embedding">[docs]</a>    <span class="k">def</span> <span class="nf">get_aligned_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">realign</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the aligned embedding</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            scale (bool): if ``True``, rescale patches (default: ``False``)</span>
+<span class="sd">            realign (bool): if ``True``, recompute aligned embedding even if it already exists (default: ``False``)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            n_nodes x dim numpy array of embedding coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">realign</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aligned_embedding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">scale</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">scale_patches</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">rotate_patches</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">translate_patches</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_aligned_embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mean_embedding</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aligned_embedding</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.save_patches"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.save_patches">[docs]</a>    <span class="k">def</span> <span class="nf">save_patches</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        save patch embeddings to json file</span>
+<span class="sd">        Args:</span>
+<span class="sd">            filename: path to output file</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">ensure_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">patch_dict</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="p">{</span><span class="nb">int</span><span class="p">(</span><span class="n">node</span><span class="p">):</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">coord</span><span class="p">]</span>
+                               <span class="k">for</span> <span class="n">node</span><span class="p">,</span> <span class="n">coord</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">patch</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)}</span>
+                      <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">patch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">)}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">patch_dict</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.load"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.load">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        restore ``AlignmentProblem`` from patch file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename: path to patch file</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">ensure_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">patch_dict</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">patch_list</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">patch_dict</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">patch_data</span> <span class="ow">in</span> <span class="n">patch_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">patch_data</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="n">coordinates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">patch_data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">patch_list</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)]</span> <span class="o">=</span> <span class="n">Patch</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">coordinates</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">patch_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AlignmentProblem.save_embedding"><a class="viewcode-back" href="../../reference/local2global.utils.AlignmentProblem.html#local2global.utils.AlignmentProblem.save_embedding">[docs]</a>    <span class="k">def</span> <span class="nf">save_embedding</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        save aligned embedding to json file</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            filename: output filename</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">ensure_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">embedding</span> <span class="o">=</span> <span class="p">{</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">):</span> <span class="n">c</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">())}</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">embedding</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__copy__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;return a copy of the alignment problem where all patches are copied.&quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">patches</span> <span class="o">=</span> <span class="p">[</span><span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span> <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">instance</span>
+
+    <span class="k">def</span> <span class="nf">_synchronise</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">matrix</span><span class="p">:</span> <span class="n">ss</span><span class="o">.</span><span class="n">spmatrix</span><span class="p">,</span> <span class="n">blocksize</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">symmetric</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">dim</span> <span class="o">=</span> <span class="n">matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">symmetric</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span> <span class="o">+</span> <span class="n">ss</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span> <span class="c1"># shift to ensure matrix is positive semi-definite for buckling mode</span>
+            <span class="n">eigs</span><span class="p">,</span> <span class="n">vecs</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigsh</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">blocksize</span><span class="p">,</span> <span class="n">v0</span><span class="o">=</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">),</span> <span class="n">which</span><span class="o">=</span><span class="s1">&#39;LM&#39;</span><span class="p">,</span>
+                                         <span class="n">sigma</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;buckling&#39;</span><span class="p">)</span>
+            <span class="c1"># eigsh unreliable with multiple (clustered) eigenvalues, only buckling mode seems to help reliably</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># scaling is not symmetric but Perron-Frobenius applies</span>
+            <span class="n">eigs</span><span class="p">,</span> <span class="n">vecs</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eigs</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="n">blocksize</span><span class="p">,</span> <span class="n">v0</span><span class="o">=</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">dim</span><span class="p">))</span>
+            <span class="n">eigs</span> <span class="o">=</span> <span class="n">eigs</span><span class="o">.</span><span class="n">real</span>
+            <span class="n">vecs</span> <span class="o">=</span> <span class="n">vecs</span><span class="o">.</span><span class="n">real</span>
+
+        <span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">eigs</span><span class="p">)</span>
+        <span class="n">vecs</span> <span class="o">=</span> <span class="n">vecs</span><span class="p">[:,</span> <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="n">blocksize</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;eigenvalues: </span><span class="si">{</span><span class="n">eigs</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">vecs</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">dim</span><span class="o">//</span><span class="n">blocksize</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">,</span> <span class="n">blocksize</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vecs</span>
+
+    <span class="k">def</span> <span class="nf">_transform_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">transform</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">Any</span><span class="p">],</span> <span class="n">dim</span><span class="p">,</span> <span class="n">symmetric_weights</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate matrix of relative transformations between patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            transform: function to compute the relative transformation</span>
+<span class="sd">            dim: output dimension of transform should be `(dim, dim)`</span>
+<span class="sd">            symmetric_weights: if true use symmetric weighting (default: False)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_patches</span>  <span class="c1"># number of patches</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># construct matrix of rotations as a block-sparse-row matrix</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">),</span> <span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">),))</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="n">indptr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_degrees</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">indptr</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">),),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+        <span class="n">keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="c1"># TODO: this could be sped up by a factor of two by not computing rotations twice</span>
+        <span class="k">for</span> <span class="n">count</span><span class="p">,</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span><span class="p">:</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">dim</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">overlap_idxs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="c1"># find positions of overlapping nodes in the two reference frames</span>
+                <span class="n">overlap1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">overlap_idxs</span><span class="p">)</span>
+                <span class="n">overlap2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">overlap_idxs</span><span class="p">)</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">overlap1</span><span class="p">,</span> <span class="n">overlap2</span><span class="p">)</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">weight</span>
+            <span class="n">element</span> <span class="o">*=</span> <span class="n">weight</span>
+            <span class="n">data</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span>
+            <span class="n">index</span><span class="p">[</span><span class="n">count</span><span class="p">]</span> <span class="o">=</span> <span class="n">j</span>
+
+        <span class="c1"># computed weighted average based on error weights</span>
+        <span class="k">if</span> <span class="n">symmetric_weights</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">indptr</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]):</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">ind</span><span class="p">]</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">weights</span><span class="p">[</span><span class="n">index</span><span class="p">[</span><span class="n">ind</span><span class="p">]])</span>
+        <span class="k">else</span><span class="p">:</span>
+             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                 <span class="n">data</span><span class="p">[</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span><span class="n">indptr</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]]</span> <span class="o">/=</span> <span class="n">weights</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">csr_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">matrix</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">bsr_matrix</span><span class="p">((</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">indptr</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="o">*</span><span class="n">n</span><span class="p">,</span> <span class="n">dim</span><span class="o">*</span><span class="n">n</span><span class="p">),</span> <span class="n">blocksize</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">matrix</span></div>
+
+
+<div class="viewcode-block" id="WeightedAlignmentProblem"><a class="viewcode-back" href="../../reference/local2global.utils.WeightedAlignmentProblem.html#local2global.utils.WeightedAlignmentProblem">[docs]</a><span class="k">class</span> <span class="nc">WeightedAlignmentProblem</span><span class="p">(</span><span class="n">AlignmentProblem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Variant of the local2global algorithm where patch edges are weighted according to the number of nodes in the overlap.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="WeightedAlignmentProblem.weight"><a class="viewcode-back" href="../../reference/local2global.utils.WeightedAlignmentProblem.html#local2global.utils.WeightedAlignmentProblem.weight">[docs]</a>    <span class="k">def</span> <span class="nf">weight</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        compute weight for pair of patches</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i: first patch index</span>
+<span class="sd">            j: second patch index</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            number of shared nodes between patches `i` and `j`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ov</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">patch_overlap</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">ov</span></div></div>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

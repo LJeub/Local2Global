@@ -1,0 +1,487 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>local2global.utils.AlignmentProblem &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="local2global.utils.Patch" href="local2global.utils.Patch.html" />
+    <link rel="prev" title="local2global.utils.transform_error" href="local2global.utils.transform_error.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="local2global.utils.html">local2global.utils</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.ensure_extension.html">local2global.utils.ensure_extension</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.nearest_orthogonal.html">local2global.utils.nearest_orthogonal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.orthogonal_MSE_error.html">local2global.utils.orthogonal_MSE_error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.procrustes_error.html">local2global.utils.procrustes_error</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.relative_orthogonal_transform.html">local2global.utils.relative_orthogonal_transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.relative_scale.html">local2global.utils.relative_scale</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.seed.html">local2global.utils.seed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.transform_error.html">local2global.utils.transform_error</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">local2global.utils.AlignmentProblem</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.Patch.html">local2global.utils.Patch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.utils.WeightedAlignmentProblem.html">local2global.utils.WeightedAlignmentProblem</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="local2global.example.html">local2global.example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="local2global.test_local2global.html">local2global.test_local2global</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../reference.html">Reference</a> &raquo;</li>
+        
+          <li><a href="local2global.utils.html">local2global.utils</a> &raquo;</li>
+        
+      <li>local2global.utils.AlignmentProblem</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/reference/local2global.utils.AlignmentProblem.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="local2global-utils-alignmentproblem">
+<h1>local2global.utils.AlignmentProblem<a class="headerlink" href="#local2global-utils-alignmentproblem" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem">
+<em class="property"><span class="pre">class</span> </em><span class="sig-name descname"><span class="pre">AlignmentProblem</span></span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Implements the standard local2global algorithm using an unweighted patch graph</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patches</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="local2global.utils.Patch.html#local2global.utils.Patch" title="local2global.utils.Patch"><span class="pre">local2global.utils.Patch</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch_edges</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_overlap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">self_loops</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialise the alignment problem with a list of patches</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>patches</strong> – List of patches to synchronise</p></li>
+<li><p><strong>patch_edges</strong> – if provided, only compute relative transformations for given patch edges (all pairs of patches
+with at least <code class="docutils literal notranslate"><span class="pre">min_overlap</span></code> points in common are included by default)</p></li>
+<li><p><strong>min_overlap</strong> (<em>int</em>) – minimum number of points in the overlap required for two patches to be considered
+connected (defaults to <cite>dim+1</cite>) where <cite>dim</cite> is the embedding dimension of the patches</p></li>
+<li><p><strong>copy_data</strong> (<em>bool</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, input patches are copied (default: <code class="docutils literal notranslate"><span class="pre">True</span></code>)</p></li>
+<li><p><strong>self_loops</strong> (<em>bool</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, self-loops from a patch to itself are included in the synchronisation problem
+(default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – if True print diagnostic information (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.__init__" title="local2global.utils.AlignmentProblem.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a></p></td>
+<td><p>Initialise the alignment problem with a list of patches</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.calc_synchronised_rotations" title="local2global.utils.AlignmentProblem.calc_synchronised_rotations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_synchronised_rotations</span></code></a></p></td>
+<td><p>Compute the orthogonal transformations that best align the patches</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.calc_synchronised_scales" title="local2global.utils.AlignmentProblem.calc_synchronised_scales"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_synchronised_scales</span></code></a></p></td>
+<td><p>Compute the scaling transformations that best align the patches</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.calc_synchronised_translations" title="local2global.utils.AlignmentProblem.calc_synchronised_translations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calc_synchronised_translations</span></code></a></p></td>
+<td><p>Compute translations that best align the patches</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.get_aligned_embedding" title="local2global.utils.AlignmentProblem.get_aligned_embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_aligned_embedding</span></code></a></p></td>
+<td><p>Return the aligned embedding</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.load" title="local2global.utils.AlignmentProblem.load"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load</span></code></a></p></td>
+<td><p>restore <code class="docutils literal notranslate"><span class="pre">AlignmentProblem</span></code> from patch file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.mean_embedding" title="local2global.utils.AlignmentProblem.mean_embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mean_embedding</span></code></a></p></td>
+<td><p>Compute node embeddings as the centroid over patch embeddings</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.rotate_patches" title="local2global.utils.AlignmentProblem.rotate_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotate_patches</span></code></a></p></td>
+<td><p>align the rotation/reflection of all patches</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.save_embedding" title="local2global.utils.AlignmentProblem.save_embedding"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_embedding</span></code></a></p></td>
+<td><p>save aligned embedding to json file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.save_patches" title="local2global.utils.AlignmentProblem.save_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_patches</span></code></a></p></td>
+<td><p>save patch embeddings to json file :param filename: path to output file</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.scale_patches" title="local2global.utils.AlignmentProblem.scale_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_patches</span></code></a></p></td>
+<td><p>Synchronise scales of the embeddings for each patch</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.translate_patches" title="local2global.utils.AlignmentProblem.translate_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">translate_patches</span></code></a></p></td>
+<td><p>align the patches by translation</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#local2global.utils.AlignmentProblem.weight" title="local2global.utils.AlignmentProblem.weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight</span></code></a></p></td>
+<td><p>Compute the weighting factor for a pair of patches</p></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dim</span></code></p></td>
+<td><p>embedding dimension</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_nodes</span></code></p></td>
+<td><p>total number of nodes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">n_patches</span></code></p></td>
+<td><p>number of patches</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">rotations</span></code></p></td>
+<td><p>tracks orthogonal transformations applied to patches (updated by <a class="reference internal" href="#local2global.utils.AlignmentProblem.rotate_patches" title="local2global.utils.AlignmentProblem.rotate_patches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rotate_patches()</span></code></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">scales</span></code></p></td>
+<td><p>tracks scale transformations applied to patches (updated by <a class="reference internal" href="#local2global.utils.AlignmentProblem.scale_patches" title="local2global.utils.AlignmentProblem.scale_patches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scale_patches()</span></code></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">shifts</span></code></p></td>
+<td><p>tracks translation transformations applied to patches (updated by <a class="reference internal" href="#local2global.utils.AlignmentProblem.scale_patches" title="local2global.utils.AlignmentProblem.scale_patches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">scale_patches()</span></code></a>, <a class="reference internal" href="#local2global.utils.AlignmentProblem.rotate_patches" title="local2global.utils.AlignmentProblem.rotate_patches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">rotate_patches()</span></code></a>, and <a class="reference internal" href="#local2global.utils.AlignmentProblem.translate_patches" title="local2global.utils.AlignmentProblem.translate_patches"><code class="xref py py-meth docutils literal notranslate"><span class="pre">translate_patches()</span></code></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">verbose</span></code></p></td>
+<td><p>print debug output if <cite>True</cite></p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.weight">
+<span class="sig-name descname"><span class="pre">weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.weight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the weighting factor for a pair of patches</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> – First patch index</p></li>
+<li><p><strong>j</strong> – Second patch index</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<p>Override this in subclasses for weighted alignment</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.scale_patches">
+<span class="sig-name descname"><span class="pre">scale_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale_factors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.scale_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.scale_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>Synchronise scales of the embeddings for each patch</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scale_factors</strong> – if provided apply the given scales instead of synchronising</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.calc_synchronised_scales">
+<span class="sig-name descname"><span class="pre">calc_synchronised_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">max_scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000000.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.calc_synchronised_scales"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.calc_synchronised_scales" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the scaling transformations that best align the patches</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_scale</strong> – maximum allowed scale (all scales are clipped to the range [<code class="docutils literal notranslate"><span class="pre">1/max_scale</span></code>, <code class="docutils literal notranslate"><span class="pre">max_scale</span></code>])
+(default: 1e8)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of scales</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.rotate_patches">
+<span class="sig-name descname"><span class="pre">rotate_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rotations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.rotate_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.rotate_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>align the rotation/reflection of all patches</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rotations</strong> – If provided, apply the given transformations instead of synchronizing patch rotations</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.calc_synchronised_rotations">
+<span class="sig-name descname"><span class="pre">calc_synchronised_rotations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.calc_synchronised_rotations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.calc_synchronised_rotations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the orthogonal transformations that best align the patches</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.translate_patches">
+<span class="sig-name descname"><span class="pre">translate_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">translations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.translate_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.translate_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>align the patches by translation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>translations</strong> – If provided, apply the given translations instead of synchronizing</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.calc_synchronised_translations">
+<span class="sig-name descname"><span class="pre">calc_synchronised_translations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.calc_synchronised_translations"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.calc_synchronised_translations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute translations that best align the patches</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.mean_embedding">
+<span class="sig-name descname"><span class="pre">mean_embedding</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.mean_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.mean_embedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute node embeddings as the centroid over patch embeddings</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.get_aligned_embedding">
+<span class="sig-name descname"><span class="pre">get_aligned_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">realign</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.get_aligned_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.get_aligned_embedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the aligned embedding</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scale</strong> (<em>bool</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, rescale patches (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+<li><p><strong>realign</strong> (<em>bool</em>) – if <code class="docutils literal notranslate"><span class="pre">True</span></code>, recompute aligned embedding even if it already exists (default: <code class="docutils literal notranslate"><span class="pre">False</span></code>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>n_nodes x dim numpy array of embedding coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.save_patches">
+<span class="sig-name descname"><span class="pre">save_patches</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.save_patches"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.save_patches" title="Permalink to this definition">¶</a></dt>
+<dd><p>save patch embeddings to json file
+:param filename: path to output file</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.load">
+<em class="property"><span class="pre">classmethod</span> </em><span class="sig-name descname"><span class="pre">load</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>restore <code class="docutils literal notranslate"><span class="pre">AlignmentProblem</span></code> from patch file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – path to patch file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="local2global.utils.AlignmentProblem.save_embedding">
+<span class="sig-name descname"><span class="pre">save_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/local2global/utils.html#AlignmentProblem.save_embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#local2global.utils.AlignmentProblem.save_embedding" title="Permalink to this definition">¶</a></dt>
+<dd><p>save aligned embedding to json file</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – output filename</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="local2global.utils.Patch.html" class="btn btn-neutral float-right" title="local2global.utils.Patch" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="local2global.utils.transform_error.html" class="btn btn-neutral float-left" title="local2global.utils.transform_error" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

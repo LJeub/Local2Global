@@ -1,0 +1,6 @@
+local2global.test\_local2global.test\_calc\_synchronised\_scales
+================================================================
+
+.. currentmodule:: local2global.test_local2global
+
+.. autofunction:: test_calc_synchronised_scales

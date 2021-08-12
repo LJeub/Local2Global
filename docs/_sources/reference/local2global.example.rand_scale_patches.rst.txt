@@ -1,0 +1,6 @@
+local2global.example.rand\_scale\_patches
+=========================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: rand_scale_patches

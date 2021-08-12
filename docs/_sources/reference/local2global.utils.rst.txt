@@ -1,0 +1,47 @@
+﻿local2global.utils
+==================
+
+.. automodule:: local2global.utils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :nosignatures:
+      :toctree:
+   
+      ensure_extension
+      nearest_orthogonal
+      orthogonal_MSE_error
+      procrustes_error
+      relative_orthogonal_transform
+      relative_scale
+      seed
+      transform_error
+   
+   
+
+   
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+      :toctree:
+   
+      AlignmentProblem
+      Patch
+      WeightedAlignmentProblem
+   
+   
+
+   
+   
+   
+
+
+

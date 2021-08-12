@@ -1,0 +1,6 @@
+local2global.utils.ensure\_extension
+====================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: ensure_extension

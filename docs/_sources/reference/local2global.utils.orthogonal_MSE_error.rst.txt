@@ -1,0 +1,6 @@
+local2global.utils.orthogonal\_MSE\_error
+=========================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: orthogonal_MSE_error

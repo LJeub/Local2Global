@@ -1,0 +1,6 @@
+local2global.example.noise\_profile
+===================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: noise_profile

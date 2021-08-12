@@ -1,0 +1,39 @@
+local2global.utils.Patch
+========================
+
+.. currentmodule:: local2global.utils
+
+.. autoclass:: Patch
+   :members:
+   :inherited-members:
+   :show-inheritance:
+   :exclude-members: __init__,  coordinates, index, shape,
+
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~Patch.__init__
+      ~Patch.get_coordinate
+      ~Patch.get_coordinates
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Patch.coordinates
+      ~Patch.index
+      ~Patch.shape
+   
+   
+

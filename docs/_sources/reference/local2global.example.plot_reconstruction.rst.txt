@@ -1,0 +1,6 @@
+local2global.example.plot\_reconstruction
+=========================================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: plot_reconstruction

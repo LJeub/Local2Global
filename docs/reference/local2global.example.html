@@ -1,0 +1,288 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>local2global.example &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="local2global.example.Voronoi_patches" href="local2global.example.Voronoi_patches.html" />
+    <link rel="prev" title="local2global.utils.WeightedAlignmentProblem" href="local2global.utils.WeightedAlignmentProblem.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../test.html">Tests</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../reference.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="local2global.utils.html">local2global.utils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">local2global.example</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.Voronoi_patches.html">local2global.example.Voronoi_patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.add_noise.html">local2global.example.add_noise</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.generate_data.html">local2global.example.generate_data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.noise_profile.html">local2global.example.noise_profile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.plot_reconstruction.html">local2global.example.plot_reconstruction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.rand_orth.html">local2global.example.rand_orth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.rand_rotate_patches.html">local2global.example.rand_rotate_patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.rand_scale_patches.html">local2global.example.rand_scale_patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.rand_shift_patches.html">local2global.example.rand_shift_patches</a></li>
+<li class="toctree-l3"><a class="reference internal" href="local2global.example.save_data.html">local2global.example.save_data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="local2global.test_local2global.html">local2global.test_local2global</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../reference.html">Reference</a> &raquo;</li>
+        
+      <li>local2global.example</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/reference/local2global.example.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-local2global.example">
+<span id="local2global-example"></span><h1>local2global.example<a class="headerlink" href="#module-local2global.example" title="Permalink to this headline">¶</a></h1>
+<p>Generate synthetic test data</p>
+<p class="rubric">Functions</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="local2global.example.Voronoi_patches.html#local2global.example.Voronoi_patches" title="local2global.example.Voronoi_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Voronoi_patches</span></code></a></p></td>
+<td><p>Create patches for points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="local2global.example.add_noise.html#local2global.example.add_noise" title="local2global.example.add_noise"><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_noise</span></code></a></p></td>
+<td><p>Add random normally-distributed noise to each point in each patch</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="local2global.example.generate_data.html#local2global.example.generate_data" title="local2global.example.generate_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">generate_data</span></code></a></p></td>
+<td><p>Generate test data with normally-distributed clusters centered on sphere.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="local2global.example.noise_profile.html#local2global.example.noise_profile" title="local2global.example.noise_profile"><code class="xref py py-obj docutils literal notranslate"><span class="pre">noise_profile</span></code></a></p></td>
+<td><p>Plot procrustes reconstruction errors as a function of the noise level</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="local2global.example.plot_reconstruction.html#local2global.example.plot_reconstruction" title="local2global.example.plot_reconstruction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_reconstruction</span></code></a></p></td>
+<td><p>Plot the reconstruction error for each point</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="local2global.example.rand_orth.html#local2global.example.rand_orth" title="local2global.example.rand_orth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand_orth</span></code></a></p></td>
+<td><p>Sample a random orthogonal matrix (for testing).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="local2global.example.rand_rotate_patches.html#local2global.example.rand_rotate_patches" title="local2global.example.rand_rotate_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand_rotate_patches</span></code></a></p></td>
+<td><p>randomly rotate patches of alignment problem and return true rotations (used for testing)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="local2global.example.rand_scale_patches.html#local2global.example.rand_scale_patches" title="local2global.example.rand_scale_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand_scale_patches</span></code></a></p></td>
+<td><p>randomly scale patches of alignment problem and return the true scales (used for testing)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="local2global.example.rand_shift_patches.html#local2global.example.rand_shift_patches" title="local2global.example.rand_shift_patches"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rand_shift_patches</span></code></a></p></td>
+<td><p>randomly shift patches by adding a normally distributed vector (used for testing)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="local2global.example.save_data.html#local2global.example.save_data" title="local2global.example.save_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_data</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+        <a href="local2global.example.Voronoi_patches.html" class="btn btn-neutral float-right" title="local2global.example.Voronoi_patches" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="local2global.utils.WeightedAlignmentProblem.html" class="btn btn-neutral float-left" title="local2global.utils.WeightedAlignmentProblem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

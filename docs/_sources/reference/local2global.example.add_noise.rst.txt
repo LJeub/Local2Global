@@ -1,0 +1,6 @@
+local2global.example.add\_noise
+===============================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: add_noise

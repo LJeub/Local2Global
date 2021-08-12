@@ -1,0 +1,53 @@
+local2global.utils.WeightedAlignmentProblem
+===========================================
+
+.. currentmodule:: local2global.utils
+
+.. autoclass:: WeightedAlignmentProblem
+   :members:
+   :inherited-members:
+   :show-inheritance:
+   :exclude-members: __init__,  dim, n_nodes, n_patches, rotations, scales, shifts, verbose,
+
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :nosignatures:
+   
+      ~WeightedAlignmentProblem.__init__
+      ~WeightedAlignmentProblem.calc_synchronised_rotations
+      ~WeightedAlignmentProblem.calc_synchronised_scales
+      ~WeightedAlignmentProblem.calc_synchronised_translations
+      ~WeightedAlignmentProblem.get_aligned_embedding
+      ~WeightedAlignmentProblem.load
+      ~WeightedAlignmentProblem.mean_embedding
+      ~WeightedAlignmentProblem.rotate_patches
+      ~WeightedAlignmentProblem.save_embedding
+      ~WeightedAlignmentProblem.save_patches
+      ~WeightedAlignmentProblem.scale_patches
+      ~WeightedAlignmentProblem.translate_patches
+      ~WeightedAlignmentProblem.weight
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~WeightedAlignmentProblem.dim
+      ~WeightedAlignmentProblem.n_nodes
+      ~WeightedAlignmentProblem.n_patches
+      ~WeightedAlignmentProblem.rotations
+      ~WeightedAlignmentProblem.scales
+      ~WeightedAlignmentProblem.shifts
+      ~WeightedAlignmentProblem.verbose
+   
+   
+

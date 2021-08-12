@@ -1,0 +1,658 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>local2global.example &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>local2global.example</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for local2global.example</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /bin/usr/env python3</span>
+
+<span class="sd">&quot;&quot;&quot;Generate synthetic test data&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">csv</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cdist</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial</span> <span class="kn">import</span> <span class="n">procrustes</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">mean</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">local2global</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ut</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+<span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+
+<div class="viewcode-block" id="generate_data"><a class="viewcode-back" href="../../reference/local2global.example.generate_data.html#local2global.example.generate_data">[docs]</a><span class="k">def</span> <span class="nf">generate_data</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Generate test data with normally-distributed clusters centered on sphere.</span>
+
+<span class="sd">    :param int n_clusters: Number of clusters</span>
+
+<span class="sd">    :param float scale: Radius of sphere for cluster centers [default: 1.0]</span>
+
+<span class="sd">    :param float std: Standard deviation for cluster points [default: 0.5]</span>
+
+<span class="sd">    :param max_size: maximum cluster size [default: 200]</span>
+
+<span class="sd">    :param min_size: minimum cluster size [default: 10]</span>
+
+<span class="sd">    :param dim: data dimension [default: 2]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Random parameters of each cluster</span>
+    <span class="k">if</span> <span class="n">dim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">list_shifts</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span>
+            <span class="n">x</span> <span class="o">/=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">x</span> <span class="o">*=</span> <span class="n">scale</span>
+            <span class="n">list_shifts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">list_shifts</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="n">n_clusters</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="n">n_clusters</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)])</span> <span class="o">*</span> <span class="n">scale</span> <span class="k">for</span> <span class="n">t</span>
+                       <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Dimension needs to be &gt;= 2&quot;</span><span class="p">)</span>
+
+    <span class="n">list_var</span> <span class="o">=</span> <span class="p">[</span><span class="n">std</span><span class="p">]</span> <span class="o">*</span> <span class="n">n_clusters</span>
+    <span class="n">list_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">min_size</span><span class="p">,</span> <span class="n">max_size</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_clusters</span><span class="p">)]</span>
+
+    <span class="c1"># Make union cluster</span>
+    <span class="n">list_of_clusters</span> <span class="o">=</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">dim</span><span class="p">))</span> <span class="o">*</span> <span class="n">v</span> <span class="o">+</span> <span class="n">shift</span> <span class="k">for</span> <span class="n">shift</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span>
+                        <span class="nb">zip</span><span class="p">(</span><span class="n">list_shifts</span><span class="p">,</span> <span class="n">list_var</span><span class="p">,</span> <span class="n">list_sizes</span><span class="p">)]</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">list_of_clusters</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">points</span></div>
+
+
+<div class="viewcode-block" id="Voronoi_patches"><a class="viewcode-back" href="../../reference/local2global.example.Voronoi_patches.html#local2global.example.Voronoi_patches">[docs]</a><span class="k">def</span> <span class="nf">Voronoi_patches</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_degree</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span>
+                    <span class="n">return_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create patches for points. Starts by sampling patch centers and assigning points to the nearest</span>
+<span class="sd">    center and any center that is within `eps` of the nearest center to create patches.</span>
+<span class="sd">    Patches are then grown by incrementally adding the next closest point</span>
+<span class="sd">    until the patch degree constraint is satisfied. Finally patches that are smaller than ``min_size``</span>
+<span class="sd">    are expanded and shortest edges are added to make the patch graph connected if necessary.</span>
+
+<span class="sd">    :param np.ndarray points: ndarray of floats of shape (N,d), d dimension embedding.</span>
+
+<span class="sd">    :param int sample_size: number of patches splitting the set of N points</span>
+
+<span class="sd">    :param int min_degree: minimum patch degree, defaults to ``d+1``</span>
+
+<span class="sd">    :param int min_overlap: minimum overlap to consider two patches connected, defaults to ``d+1``</span>
+
+<span class="sd">    :param int min_size: minimum patch size, defaults to ``len(points)/sample_size``</span>
+
+<span class="sd">    :param float eps: tolerance for expanding initial Voronoi patches</span>
+
+<span class="sd">    :param bool return_graph: if True, return patch graph as a networkx Graph</span>
+
+<span class="sd">    :param bool kmeans: if True, choose patch centers using kmeans,</span>
+<span class="sd">        otherwise patch centers are sampled uniformly at random from points.</span>
+
+<span class="sd">    :return: list of patches, (patch graph if return_graph==True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">points</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">if</span> <span class="n">min_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_size</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="n">sample_size</span>
+    <span class="k">if</span> <span class="n">min_degree</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_degree</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">min_overlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">min_overlap</span> <span class="o">=</span> <span class="n">d</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Find patch centers</span>
+    <span class="k">if</span> <span class="n">kmeans</span><span class="p">:</span>
+        <span class="n">k_means</span> <span class="o">=</span> <span class="n">KMeans</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">sample_size</span><span class="p">)</span>
+        <span class="n">k_means</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">points</span><span class="p">)</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">k_means</span><span class="o">.</span><span class="n">cluster_centers_</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sample_mask</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">points</span><span class="p">),</span> <span class="n">size</span><span class="o">=</span><span class="n">sample_size</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">centers</span> <span class="o">=</span> <span class="n">points</span><span class="p">[</span><span class="n">sample_mask</span><span class="p">,</span> <span class="p">:]</span>
+
+    <span class="c1"># list of node indeces for each patch</span>
+    <span class="n">node_lists</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">centers</span><span class="p">]</span>
+    <span class="n">patch_index</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+    <span class="n">overlaps</span> <span class="o">=</span> <span class="p">[</span><span class="n">Counter</span><span class="p">()</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sample_size</span><span class="p">)]</span>
+
+    <span class="c1"># compute distance to centers</span>
+    <span class="n">distances</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="n">points</span><span class="p">)</span>
+
+    <span class="c1"># build eps-Voronoi patches</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">patch</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span>
+        <span class="n">node_lists</span><span class="p">[</span><span class="n">patch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                <span class="n">overlaps</span><span class="p">[</span><span class="n">other</span><span class="p">][</span><span class="n">patch</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">overlaps</span><span class="p">[</span><span class="n">patch</span><span class="p">][</span><span class="n">other</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+        <span class="n">min_dist</span> <span class="o">=</span> <span class="n">distances</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">index</span><span class="p">[</span><span class="mi">1</span><span class="p">:,</span> <span class="n">node</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">distances</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">eps</span> <span class="o">*</span> <span class="n">min_dist</span><span class="p">:</span>
+                <span class="n">node_lists</span><span class="p">[</span><span class="n">patch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]:</span>
+                        <span class="n">overlaps</span><span class="p">[</span><span class="n">other</span><span class="p">][</span><span class="n">patch</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">overlaps</span><span class="p">[</span><span class="n">patch</span><span class="p">][</span><span class="n">other</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">patch_index</span><span class="p">[</span><span class="n">node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="c1"># grow patches until degree constraints and size constraints are satisfied</span>
+
+    <span class="c1"># find patches that do not satisfy the constraints</span>
+    <span class="n">grow</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">ov</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">overlaps</span><span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_lists</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">min_size</span>
+                                               <span class="ow">or</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="n">min_overlap</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ov</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">min_degree</span><span class="p">}</span>
+
+    <span class="c1"># sort distance matrix (make sure patch members are sorted first)</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node_lists</span><span class="p">):</span>
+        <span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">nodes</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">distances</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">grow</span><span class="p">:</span>
+        <span class="n">patches</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">grow</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">patches</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">node_lists</span><span class="p">[</span><span class="n">patch</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">size</span> <span class="o">&gt;=</span> <span class="n">n</span> <span class="ow">or</span> <span class="p">(</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">min_size</span>
+                             <span class="ow">and</span> <span class="nb">sum</span><span class="p">(</span><span class="n">v</span> <span class="o">&gt;=</span> <span class="n">min_overlap</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">overlaps</span><span class="p">[</span><span class="n">patch</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="n">min_degree</span><span class="p">):</span>
+                <span class="n">grow</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">next_node</span> <span class="o">=</span> <span class="n">index</span><span class="p">[</span><span class="n">patch</span><span class="p">,</span> <span class="n">size</span><span class="p">]</span>
+                <span class="n">node_lists</span><span class="p">[</span><span class="n">patch</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_node</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">other</span> <span class="ow">in</span> <span class="n">patch_index</span><span class="p">[</span><span class="n">next_node</span><span class="p">]:</span>
+                    <span class="n">overlaps</span><span class="p">[</span><span class="n">other</span><span class="p">][</span><span class="n">patch</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">overlaps</span><span class="p">[</span><span class="n">patch</span><span class="p">][</span><span class="n">other</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">patch_index</span><span class="p">[</span><span class="n">next_node</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">patch</span><span class="p">)</span>
+
+    <span class="c1"># check patch network is connected and add edges if necessary</span>
+    <span class="n">patch_network</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">others</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">overlaps</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">other</span><span class="p">,</span> <span class="n">ov</span> <span class="ow">in</span> <span class="n">others</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">ov</span> <span class="o">&gt;=</span> <span class="n">min_overlap</span><span class="p">:</span>
+                <span class="n">patch_network</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">patch_network</span><span class="p">):</span>
+        <span class="n">components</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">nx</span><span class="o">.</span><span class="n">connected_components</span><span class="p">(</span><span class="n">patch_network</span><span class="p">))</span>
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c1</span><span class="p">,</span> <span class="n">patches1</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">):</span>
+            <span class="n">patches1</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">patches1</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">it</span><span class="p">,</span> <span class="n">patches2</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">components</span><span class="p">[</span><span class="n">c1</span><span class="o">+</span><span class="mi">1</span><span class="p">:]):</span>
+                <span class="n">patches2</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">patches2</span><span class="p">)</span>
+                <span class="n">c2</span> <span class="o">=</span> <span class="n">c1</span><span class="o">+</span><span class="n">it</span><span class="o">+</span><span class="mi">1</span>
+                <span class="n">patch_distances</span> <span class="o">=</span> <span class="n">cdist</span><span class="p">(</span><span class="n">centers</span><span class="p">[</span><span class="n">patches1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">centers</span><span class="p">[</span><span class="n">patches2</span><span class="p">,</span> <span class="p">:])</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">patch_distances</span><span class="p">),</span> <span class="n">patch_distances</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">patch_distances</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">patches1</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">patches2</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">))</span>
+        <span class="n">edges</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">component_graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+        <span class="n">component_graph</span><span class="o">.</span><span class="n">add_nodes_from</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">components</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">dist</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="ow">in</span> <span class="n">edges</span><span class="p">:</span>
+            <span class="n">nodes1</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_lists</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="n">nodes2</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">node_lists</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="n">nodes1</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">nodes2</span><span class="p">)</span>
+            <span class="n">dist_list</span> <span class="o">=</span> <span class="p">[(</span><span class="n">distances</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">node</span><span class="p">]</span> <span class="o">+</span> <span class="n">distances</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">node</span><span class="p">],</span> <span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+            <span class="n">dist_list</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">min_overlap</span><span class="p">):</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">dist_list</span><span class="p">[</span><span class="n">it</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes1</span><span class="p">:</span>
+                    <span class="n">node_lists</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nodes2</span><span class="p">:</span>
+                    <span class="n">node_lists</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="n">component_graph</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">)</span>
+            <span class="n">patch_network</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">nx</span><span class="o">.</span><span class="n">is_connected</span><span class="p">(</span><span class="n">component_graph</span><span class="p">):</span>
+                <span class="k">break</span>
+
+    <span class="k">if</span> <span class="n">return_graph</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="p">:])</span> <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">node_lists</span><span class="p">],</span> <span class="n">patch_network</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">nodes</span><span class="p">,</span> <span class="n">points</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="p">:])</span> <span class="k">for</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">node_lists</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="rand_scale_patches"><a class="viewcode-back" href="../../reference/local2global.example.rand_scale_patches.html#local2global.example.rand_scale_patches">[docs]</a><span class="k">def</span> <span class="nf">rand_scale_patches</span><span class="p">(</span><span class="n">alignment_problem</span><span class="p">:</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">,</span> <span class="n">min_scale</span><span class="o">=</span><span class="mf">1e-2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    randomly scale patches of alignment problem and return the true scales (used for testing)</span>
+
+<span class="sd">    :param AlignmentProblem alignment_problem: Alignment problem to be rescaled</span>
+<span class="sd">    :param float min_scale: minimum scale factor (scale factors are sampled</span>
+<span class="sd">        log-uniformly from the interval [min_scale, 1/min_scale])</span>
+
+<span class="sd">    :return: list of true scales</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">min_scale</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">min_scale</span><span class="p">),</span> <span class="n">alignment_problem</span><span class="o">.</span><span class="n">n_patches</span><span class="p">))</span>
+    <span class="n">alignment_problem</span><span class="o">.</span><span class="n">scale_patches</span><span class="p">(</span><span class="n">scales</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">scales</span></div>
+
+
+<div class="viewcode-block" id="rand_rotate_patches"><a class="viewcode-back" href="../../reference/local2global.example.rand_rotate_patches.html#local2global.example.rand_rotate_patches">[docs]</a><span class="k">def</span> <span class="nf">rand_rotate_patches</span><span class="p">(</span><span class="n">alignment_problem</span><span class="p">:</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    randomly rotate patches of alignment problem and return true rotations (used for testing)</span>
+
+<span class="sd">    :param AlignmentProblem alignment_problem: Alignment problem to be transformed</span>
+
+<span class="sd">    :return: list of true rotations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rotations</span> <span class="o">=</span> <span class="p">[</span><span class="n">rand_orth</span><span class="p">(</span><span class="n">alignment_problem</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">alignment_problem</span><span class="o">.</span><span class="n">patches</span><span class="p">]</span>
+    <span class="n">alignment_problem</span><span class="o">.</span><span class="n">rotate_patches</span><span class="p">(</span><span class="n">rotations</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rotations</span></div>
+
+
+<div class="viewcode-block" id="rand_shift_patches"><a class="viewcode-back" href="../../reference/local2global.example.rand_shift_patches.html#local2global.example.rand_shift_patches">[docs]</a><span class="k">def</span> <span class="nf">rand_shift_patches</span><span class="p">(</span><span class="n">alignment_problem</span><span class="p">:</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">,</span> <span class="n">shift_scale</span><span class="o">=</span><span class="mf">100.0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    randomly shift patches by adding a normally distributed vector (used for testing)</span>
+
+<span class="sd">    :param AlignmentProblem alignment_problem: Alignment problem to be transformed</span>
+
+<span class="sd">    :param float shift_scale: Standard deviation for shifts</span>
+
+<span class="sd">    :return: np.ndarray of true shifts</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">shifts</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">shift_scale</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">alignment_problem</span><span class="o">.</span><span class="n">n_patches</span><span class="p">,</span> <span class="n">alignment_problem</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span>
+    <span class="n">alignment_problem</span><span class="o">.</span><span class="n">translate_patches</span><span class="p">(</span><span class="n">shifts</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">shifts</span></div>
+
+
+<div class="viewcode-block" id="add_noise"><a class="viewcode-back" href="../../reference/local2global.example.add_noise.html#local2global.example.add_noise">[docs]</a><span class="k">def</span> <span class="nf">add_noise</span><span class="p">(</span><span class="n">alignment_problem</span><span class="p">:</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">,</span> <span class="n">noise_level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scales</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add random normally-distributed noise to each point in each patch</span>
+
+<span class="sd">    :param AlignmentProblem alignment_problem: Alignment problem to be transformed</span>
+
+<span class="sd">    :param noise_level: Standard deviation of noise</span>
+
+<span class="sd">    :param scales: (optional) list of scales for each patch (noise for patch is multiplied by corresponding scale)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">noise_level</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">scales</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">alignment_problem</span><span class="o">.</span><span class="n">n_patches</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">scale</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">alignment_problem</span><span class="o">.</span><span class="n">patches</span><span class="p">,</span> <span class="n">scales</span><span class="p">):</span>
+            <span class="n">noise</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">noise_level</span> <span class="o">*</span> <span class="n">scale</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">patch</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+            <span class="n">patch</span><span class="o">.</span><span class="n">coordinates</span> <span class="o">+=</span> <span class="n">noise</span></div>
+
+
+<div class="viewcode-block" id="noise_profile"><a class="viewcode-back" href="../../reference/local2global.example.noise_profile.html#local2global.example.noise_profile">[docs]</a><span class="k">def</span> <span class="nf">noise_profile</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">base_problem</span><span class="p">,</span> <span class="n">max_noise</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">101</span><span class="p">,</span> <span class="n">scales</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">types</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot procrustes reconstruction errors as a function of the noise level</span>
+
+<span class="sd">    :param points: True data</span>
+
+<span class="sd">    :param base_problem: Alignment problem without noise (usually should have rotated/shifted/scaled patches)</span>
+
+<span class="sd">    :param max_noise: Maximum standard deviation for noise</span>
+
+<span class="sd">    :param steps: number of noise steps between 0 and `max_noise`</span>
+
+<span class="sd">    :param scales: scales of patches (noise is scaled accordingly)</span>
+
+<span class="sd">    :param types: List of AlignmentProblem subclasses to test (each is tested with the same noise)</span>
+
+<span class="sd">    :param labels: Labels to use for the legend</span>
+
+<span class="sd">    :param min_overlap: Values of `min_overlap` to include in test.</span>
+
+<span class="sd">    :param bool plot: plot results [default: True]</span>
+
+<span class="sd">    :return: noise_levels, errors</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># set up labels and min_overlap</span>
+    <span class="k">if</span> <span class="n">min_overlap</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">min_overlap</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="n">min_overlap</span> <span class="o">=</span> <span class="p">[</span><span class="n">min_overlap</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">ov</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">label</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">for</span> <span class="n">ov</span> <span class="ow">in</span> <span class="n">min_overlap</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">types</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">]</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">steps</span><span class="p">)]</span>
+    <span class="n">noise_levels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">max_noise</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">e_l</span><span class="p">,</span> <span class="n">noise</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">errors</span><span class="p">,</span> <span class="n">noise_levels</span><span class="p">):</span>
+        <span class="n">noisy_problem</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">base_problem</span><span class="p">)</span>
+        <span class="n">add_noise</span><span class="p">(</span><span class="n">noisy_problem</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">scales</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">problem_cls</span> <span class="ow">in</span> <span class="n">types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">min_overlap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">problem</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">noisy_problem</span><span class="p">)</span>
+                <span class="n">problem</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">problem_cls</span>
+                <span class="n">e_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">procrustes_error</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">ov</span> <span class="ow">in</span> <span class="n">min_overlap</span><span class="p">:</span>
+                    <span class="n">ov_problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">noisy_problem</span><span class="o">.</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">ov</span><span class="p">)</span>
+                    <span class="n">e_l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">procrustes_error</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">ov_problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Noise: </span><span class="si">{</span><span class="n">noise</span><span class="si">}</span><span class="s2">, errors: </span><span class="si">{</span><span class="n">e_l</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">noise_levels</span><span class="p">,</span> <span class="n">errors</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">labels</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;noise level&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;procrustes errors&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">noise_levels</span><span class="p">,</span> <span class="n">errors</span></div>
+
+
+<div class="viewcode-block" id="plot_reconstruction"><a class="viewcode-back" href="../../reference/local2global.example.plot_reconstruction.html#local2global.example.plot_reconstruction">[docs]</a><span class="k">def</span> <span class="nf">plot_reconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">problem</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the reconstruction error for each point</span>
+
+<span class="sd">    :param points: True positions</span>
+
+<span class="sd">    :param problem: Alignment problem</span>
+
+<span class="sd">    :param scale: Rescale patches [default: True]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">recovered_pos</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">points</span><span class="p">,</span> <span class="n">recovered_pos</span><span class="p">,</span> <span class="n">error</span> <span class="o">=</span> <span class="n">procrustes</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">recovered_pos</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">recovered_pos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">points</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">recovered_pos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]]),</span>
+             <span class="s1">&#39;k&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">recovered_pos</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">recovered_pos</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k.&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">patch</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">:</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">old_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">points</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">new_c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">recovered_pos</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="p">:],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">old_c</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">new_c</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">old_c</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">new_c</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">new_c</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[</span><span class="n">new_c</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="s1">&#39;r.&#39;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">error</span></div>
+
+
+<div class="viewcode-block" id="save_data"><a class="viewcode-back" href="../../reference/local2global.example.save_data.html#local2global.example.save_data">[docs]</a><span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">ensure_extension</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">points</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rand_orth"><a class="viewcode-back" href="../../reference/local2global.example.rand_orth.html#local2global.example.rand_orth">[docs]</a><span class="k">def</span> <span class="nf">rand_orth</span><span class="p">(</span><span class="n">dim</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sample a random orthogonal matrix (for testing).</span>
+<span class="sd">    Use normal distribution to ensure uniformity.&quot;&quot;&quot;</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+    <span class="n">M</span> <span class="o">=</span> <span class="n">a</span>
+
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">dim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">rg</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="n">dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">-</span> <span class="n">M</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">M</span><span class="p">,</span> <span class="n">a</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">M</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">argparse</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Run local2global example.&#39;</span><span class="p">,</span>
+                                     <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--n_clusters&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of clusters in test data&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--max_shift&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Cluster shift&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--kmeans&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;use kmeans to find patch centers&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--max_var&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Cluster dispersion&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--max_size&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Max cluster size&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--sample_size&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of patches&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--dim&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Data dimension&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--eps&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">1.6</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Tolerance for patch overlaps&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--min_overlap&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Minimum patch overlap for connectivity constraint&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--min_recovery_overlap&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Minimum patch overlap for recovery (defaults to min_overlap)&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--min_size&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Minimum patch size&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--min_degree&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Minimum patch degree&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--max_noise&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum noise level&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--steps&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">101</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Number of steps for noise profile&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--plot_noise&#39;</span><span class="p">,</span> <span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="p">[],</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;append&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Noise level to plot (can be specified multiple times)&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--outdir&#39;</span><span class="p">,</span> <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;output dir&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--seed&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Seed for rng&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">min_recovery_overlap</span><span class="p">:</span>
+        <span class="n">args</span><span class="o">.</span><span class="n">min_recovery_overlap</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">ut</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">problem_types</span> <span class="o">=</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">,</span> <span class="n">ut</span><span class="o">.</span><span class="n">WeightedAlignmentProblem</span><span class="p">]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;standard&#39;</span><span class="p">,</span> <span class="s1">&#39;weighted&#39;</span><span class="p">]</span>
+
+    <span class="c1"># generate random data</span>
+    <span class="n">points</span> <span class="o">=</span> <span class="n">generate_data</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n_clusters</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_shift</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_var</span><span class="p">,</span>
+                           <span class="n">max_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_size</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">dim</span><span class="p">)</span>
+    <span class="n">outdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outdir</span><span class="p">)</span>
+    <span class="n">save_data</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="n">outdir</span> <span class="o">/</span> <span class="s1">&#39;points.csv&#39;</span><span class="p">)</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">Voronoi_patches</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">sample_size</span><span class="p">,</span> <span class="n">min_degree</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">min_degree</span><span class="p">,</span>
+                              <span class="n">min_overlap</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">min_overlap</span><span class="p">,</span> <span class="n">min_size</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">min_size</span><span class="p">,</span> <span class="n">eps</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span> <span class="n">kmeans</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">kmeans</span><span class="p">)</span>
+    <span class="n">base_problem</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">base_problem</span><span class="p">)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">rand_scale_patches</span><span class="p">(</span><span class="n">base_problem</span><span class="p">)</span>
+    <span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">base_problem</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean patch degree: </span><span class="si">{</span><span class="n">mean</span><span class="p">(</span><span class="n">base_problem</span><span class="o">.</span><span class="n">patch_degrees</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">steps</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+        <span class="n">noise_profile</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">base_problem</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">steps</span><span class="p">,</span> <span class="n">max_noise</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">max_noise</span><span class="p">,</span> <span class="n">scales</span><span class="o">=</span><span class="n">scales</span><span class="p">,</span>
+                      <span class="n">types</span><span class="o">=</span><span class="n">problem_types</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">min_recovery_overlap</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="s1">&#39;noise_profile.pdf&#39;</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">noise</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">plot_noise</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">dim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;plotting reconstruction error only works for dim=2&quot;</span><span class="p">)</span>
+        <span class="n">noisy_problem</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">base_problem</span><span class="p">)</span>
+        <span class="n">add_noise</span><span class="p">(</span><span class="n">noisy_problem</span><span class="p">,</span> <span class="n">noise_level</span><span class="o">=</span><span class="n">noise</span><span class="p">,</span> <span class="n">scales</span><span class="o">=</span><span class="n">scales</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">problem_cls</span><span class="p">,</span> <span class="n">label</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">problem_types</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">problem</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">noisy_problem</span><span class="p">)</span>
+            <span class="n">problem</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="n">problem_cls</span>
+            <span class="n">error</span> <span class="o">=</span> <span class="n">plot_reconstruction</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Noise: </span><span class="si">{</span><span class="n">noise</span><span class="si">}</span><span class="s2">, error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">outdir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;errorplot_</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s1">_noise</span><span class="si">{</span><span class="n">noise</span><span class="si">}</span><span class="s1">.pdf&#39;</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

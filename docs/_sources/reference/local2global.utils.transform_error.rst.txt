@@ -1,0 +1,6 @@
+local2global.utils.transform\_error
+===================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: transform_error

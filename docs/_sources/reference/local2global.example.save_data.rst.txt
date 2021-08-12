@@ -1,0 +1,6 @@
+local2global.example.save\_data
+===============================
+
+.. currentmodule:: local2global.example
+
+.. autofunction:: save_data

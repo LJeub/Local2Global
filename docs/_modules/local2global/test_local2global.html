@@ -1,0 +1,450 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>local2global.test_local2global &mdash; local2global 0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-binder.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-dataframe.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/gallery-rendered-html.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/custom.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> local2global
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../index.html">Home</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage/usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../test.html">Tests</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reference.html">Reference</a></li>
+</ul>
+
+            
+          
+<p class="caption" role="heading"><span class="caption-text">Index</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">local2global</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>local2global.test_local2global</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for local2global.test_local2global</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Test local2global reconstruction&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">local2global.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">import</span> <span class="nn">local2global.example</span> <span class="k">as</span> <span class="nn">ex</span>
+<span class="kn">from</span> <span class="nn">statistics</span> <span class="kn">import</span> <span class="n">mean</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+
+<span class="c1"># fixed seed for testing</span>
+<span class="c1"># _seed = np.random.SeedSequence(148047762894979172857694243677519903461)</span>
+
+<span class="n">_seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">()</span>
+<span class="n">ut</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">_seed</span><span class="o">.</span><span class="n">entropy</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="seed"><a class="viewcode-back" href="../../reference/local2global.test_local2global.seed.html#local2global.test_local2global.seed">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">autouse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">seed</span><span class="p">():</span>
+    <span class="n">ut</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">_seed</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">_seed</span><span class="o">.</span><span class="n">entropy</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="iter_seed"><a class="viewcode-back" href="../../reference/local2global.test_local2global.iter_seed.html#local2global.test_local2global.iter_seed">[docs]</a><span class="k">def</span> <span class="nf">iter_seed</span><span class="p">(</span><span class="n">it</span><span class="p">):</span>
+    <span class="n">it_seed</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">SeedSequence</span><span class="p">(</span><span class="n">entropy</span><span class="o">=</span><span class="n">_seed</span><span class="o">.</span><span class="n">entropy</span><span class="p">,</span> <span class="n">n_children_spawned</span><span class="o">=</span><span class="n">it</span><span class="p">)</span>
+    <span class="n">ut</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">it_seed</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<span class="c1"># test parameters</span>
+<span class="n">noise_scales</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">11</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+<span class="n">test_classes</span> <span class="o">=</span> <span class="p">[</span><span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">,</span>  <span class="n">ut</span><span class="o">.</span><span class="n">WeightedAlignmentProblem</span><span class="p">]</span>
+<span class="n">dim</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span>
+<span class="n">min_overlap</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dim</span><span class="p">]</span>
+<span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-6</span>
+
+<span class="c1"># test data</span>
+<span class="n">points_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">generate_data</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">max_size</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dim</span><span class="p">]</span>
+<span class="n">patches_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">ex</span><span class="o">.</span><span class="n">Voronoi_patches</span><span class="p">(</span><span class="n">points</span><span class="o">=</span><span class="n">points</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="mi">2</span><span class="o">*</span><span class="n">mo</span><span class="p">,</span> <span class="n">min_degree</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                          <span class="n">eps</span><span class="o">=</span><span class="mi">1</span><span class="o">+</span><span class="mi">1</span><span class="o">/</span><span class="n">d</span><span class="o">**</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">return_graph</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">kmeans</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+           <span class="k">for</span> <span class="n">points</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">mo</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">points_list</span><span class="p">,</span> <span class="n">dim</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">)]</span>
+
+
+
+<div class="viewcode-block" id="test_stability"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_stability.html#local2global.test_local2global.test_stability">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_stability</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">problem_cls</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Test stability of eigenvector calculations&quot;&quot;&quot;</span>
+    <span class="n">iter_seed</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="c1"># ex.add_noise(problem, 1e-8)</span>
+    <span class="n">rotations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered_rots</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_rotations</span><span class="p">()</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">orthogonal_MSE_error</span><span class="p">(</span><span class="n">rotations</span><span class="p">,</span> <span class="n">recovered_rots</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_calc_synchronised_rotations"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_calc_synchronised_rotations.html#local2global.test_local2global.test_calc_synchronised_rotations">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_calc_synchronised_rotations</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">rotations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered_rots</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_rotations</span><span class="p">()</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">orthogonal_MSE_error</span><span class="p">(</span><span class="n">rotations</span><span class="p">,</span> <span class="n">recovered_rots</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_noisy_calc_synchronised_rotations"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_noisy_calc_synchronised_rotations.html#local2global.test_local2global.test_noisy_calc_synchronised_rotations">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Noisy tests may fail, though many failures are a bad sign&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;test_class&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">noise_scales</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_noisy_calc_synchronised_rotations</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">test_class</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">test_class</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">rotations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">noise</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">relative_error</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rotations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">rotations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+                                     <span class="o">-</span> <span class="n">ut</span><span class="o">.</span><span class="n">relative_orthogonal_transform</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">),</span>
+                                                                        <span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">))</span>
+                                     <span class="p">)</span>
+                      <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">ov_indx</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+
+    <span class="n">max_err</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+    <span class="n">min_err</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+    <span class="n">mean_err</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+
+    <span class="n">recovered_rots</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_rotations</span><span class="p">()</span>
+    <span class="n">problem</span><span class="o">.</span><span class="n">rotate_patches</span><span class="p">(</span><span class="n">rotations</span><span class="o">=</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">T</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">recovered_rots</span><span class="p">])</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">orthogonal_MSE_error</span><span class="p">(</span><span class="n">rotations</span><span class="p">,</span> <span class="n">recovered_rots</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean rotation error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error of relative rotations is min: </span><span class="si">{</span><span class="n">min_err</span><span class="si">}</span><span class="s2">, mean: </span><span class="si">{</span><span class="n">mean_err</span><span class="si">}</span><span class="s2">, max: </span><span class="si">{</span><span class="n">max_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_err</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="test_calc_synchronised_scales"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_calc_synchronised_scales.html#local2global.test_local2global.test_calc_synchronised_scales">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_calc_synchronised_scales</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_scale_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered_scales</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_scales</span><span class="p">()</span>
+    <span class="n">rel_scales</span> <span class="o">=</span> <span class="n">scales</span> <span class="o">/</span> <span class="n">recovered_scales</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">rel_scales</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_noisy_calc_synchronised_scales"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_noisy_calc_synchronised_scales.html#local2global.test_local2global.test_noisy_calc_synchronised_scales">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Noisy tests may fail, though many failures are a bad sign&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">noise_scales</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_noisy_calc_synchronised_scales</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">scales</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_scale_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">scales</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">relative_error</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">ov_indx</span> <span class="ow">in</span> <span class="n">problem</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">scales</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/</span> <span class="n">scales</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+        <span class="n">relative_error</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">ratio</span>
+                                             <span class="o">-</span> <span class="n">ut</span><span class="o">.</span><span class="n">relative_scale</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">),</span>
+                                                                 <span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">))))</span>
+    <span class="n">max_err</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+    <span class="n">min_err</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+    <span class="n">mean_err</span> <span class="o">=</span> <span class="n">mean</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span>
+    <span class="n">recovered_scales</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_scales</span><span class="p">()</span>
+    <span class="n">rel_scales</span> <span class="o">=</span> <span class="n">scales</span> <span class="o">/</span> <span class="n">recovered_scales</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">rel_scales</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error of relative rotations is min: </span><span class="si">{</span><span class="n">min_err</span><span class="si">}</span><span class="s2">, mean: </span><span class="si">{</span><span class="n">mean_err</span><span class="si">}</span><span class="s2">, max: </span><span class="si">{</span><span class="n">max_err</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">max_err</span> <span class="o">+</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_calc_synchronised_translations"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_calc_synchronised_translations.html#local2global.test_local2global.test_calc_synchronised_translations">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_calc_synchronised_translations</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">translations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered_translations</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_translations</span><span class="p">()</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">translations</span><span class="o">+</span><span class="n">recovered_translations</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_noisy_calc_synchronised_translations"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_noisy_calc_synchronised_translations.html#local2global.test_local2global.test_noisy_calc_synchronised_translations">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Noisy tests may fail, though many failures are a bad sign&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">noise_scales</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_noisy_calc_synchronised_translations</span><span class="p">(</span><span class="n">noise</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">AlignmentProblem</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">translations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">noise</span><span class="p">)</span>
+    <span class="n">recovered_translations</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">calc_synchronised_translations</span><span class="p">()</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">translations</span><span class="o">+</span><span class="n">recovered_translations</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Mean error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">noise</span> <span class="o">+</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_get_aligned_embedding"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_get_aligned_embedding.html#local2global.test_local2global.test_get_aligned_embedding">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap,points&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">,</span> <span class="n">points_list</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_get_aligned_embedding</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">,</span> <span class="n">points</span><span class="p">):</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">rand_scale_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">procrustes_error</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">recovered</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Procrustes error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="n">tol</span></div>
+
+
+<div class="viewcode-block" id="test_noisy_get_aligned_embedding"><a class="viewcode-back" href="../../reference/local2global.test_local2global.test_noisy_get_aligned_embedding.html#local2global.test_local2global.test_noisy_get_aligned_embedding">[docs]</a><span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">xfail</span><span class="p">(</span><span class="n">reason</span><span class="o">=</span><span class="s2">&quot;Noisy tests may fail, though many failures are a bad sign&quot;</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;problem_cls&quot;</span><span class="p">,</span> <span class="n">test_classes</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;it&quot;</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;noise&quot;</span><span class="p">,</span> <span class="n">noise_scales</span><span class="p">)</span>
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;patches,min_overlap,points&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches_list</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">,</span> <span class="n">points_list</span><span class="p">))</span>
+<span class="k">def</span> <span class="nf">test_noisy_get_aligned_embedding</span><span class="p">(</span><span class="n">problem_cls</span><span class="p">,</span> <span class="n">noise</span><span class="p">,</span> <span class="n">it</span><span class="p">,</span> <span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="p">,</span><span class="n">points</span><span class="p">):</span>
+    <span class="n">iter_seed</span><span class="p">(</span><span class="n">it</span><span class="p">)</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">problem_cls</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">min_overlap</span><span class="o">=</span><span class="n">min_overlap</span><span class="p">)</span>
+    <span class="n">ex</span><span class="o">.</span><span class="n">add_noise</span><span class="p">(</span><span class="n">problem</span><span class="p">,</span> <span class="n">noise</span><span class="p">)</span>
+    <span class="n">shifts</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_shift_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">rotations</span> <span class="o">=</span> <span class="n">ex</span><span class="o">.</span><span class="n">rand_rotate_patches</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="c1"># scales = ex.rand_scale_patches(problem)</span>
+    <span class="c1"># problem.save_patches(&quot;test_patches.json&quot;)</span>
+    <span class="n">noise_error</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">procrustes_error</span><span class="p">(</span><span class="n">patch</span><span class="o">.</span><span class="n">coordinates</span><span class="p">,</span> <span class="n">noisy_patch</span><span class="o">.</span><span class="n">coordinates</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">patch</span><span class="p">,</span> <span class="n">noisy_patch</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">patches</span><span class="p">,</span> <span class="n">problem</span><span class="o">.</span><span class="n">patches</span><span class="p">))</span>
+    <span class="n">problem_before</span> <span class="o">=</span> <span class="n">copy</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">recovered</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">get_aligned_embedding</span><span class="p">(</span><span class="n">scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">ut</span><span class="o">.</span><span class="n">procrustes_error</span><span class="p">(</span><span class="n">points</span><span class="p">,</span> <span class="n">recovered</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Procrustes error is </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">, patch max: </span><span class="si">{</span><span class="n">noise_error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">relative_error</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">rotations</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">@</span> <span class="n">rotations</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+                                     <span class="o">-</span> <span class="n">ut</span><span class="o">.</span><span class="n">relative_orthogonal_transform</span><span class="p">(</span><span class="n">problem_before</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">),</span>
+                                                                        <span class="n">problem_before</span><span class="o">.</span><span class="n">patches</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">get_coordinates</span><span class="p">(</span><span class="n">ov_indx</span><span class="p">))</span>
+                                     <span class="p">)</span>
+                      <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">ov_indx</span> <span class="ow">in</span> <span class="n">problem_before</span><span class="o">.</span><span class="n">patch_overlap</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;rotation error: </span><span class="si">{</span><span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">rotations</span><span class="p">)</span><span class="si">}</span><span class="s2">, input max: </span><span class="si">{</span><span class="nb">max</span><span class="p">(</span><span class="n">relative_error</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;translation error: </span><span class="si">{</span><span class="n">ut</span><span class="o">.</span><span class="n">transform_error</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">shifts</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># store configuration for failed tests</span>
+    <span class="c1"># if error &gt; max(noise_error, tol):</span>
+    <span class="c1">#     folder = Path().cwd()</span>
+    <span class="c1">#     folder /= f&quot;test_noisy_get_aligned_embedding[{noise}_{type(problem).__name__}_{it}]&quot;</span>
+    <span class="c1">#     folder.mkdir(exist_ok=True)</span>
+    <span class="c1">#     problem_before.save_patches(folder / &quot;noisy_patches.json&quot;)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     with open(folder / &#39;gt_positions.csv&#39;, &#39;w&#39;, newline=&#39;&#39;) as f:</span>
+    <span class="c1">#         writer = csv.writer(f)</span>
+    <span class="c1">#         writer.writerows(points)</span>
+    <span class="c1">#</span>
+    <span class="c1">#     folder /= &#39;gt_rotations&#39;</span>
+    <span class="c1">#     folder.mkdir(exist_ok=True)</span>
+    <span class="c1">#     for i, rot in enumerate(rotations):</span>
+    <span class="c1">#         with open(folder / f&quot;gt_rot_patch_{i+1}.csv&quot;, &#39;w&#39;, newline=&#39;&#39;) as f:</span>
+    <span class="c1">#             writer = csv.writer(f)</span>
+    <span class="c1">#             writer.writerows(rot)</span>
+    <span class="k">assert</span> <span class="n">error</span> <span class="o">&lt;</span> <span class="nb">max</span><span class="p">(</span><span class="n">noise_error</span><span class="p">,</span> <span class="n">tol</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># run integration test as script (e.g. for profiling)</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">pytest</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2021, Lucas G. S. Jeub.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

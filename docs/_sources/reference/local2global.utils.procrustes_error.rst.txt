@@ -1,0 +1,6 @@
+local2global.utils.procrustes\_error
+====================================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: procrustes_error

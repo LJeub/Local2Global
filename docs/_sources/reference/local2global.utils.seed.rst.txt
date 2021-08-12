@@ -1,0 +1,6 @@
+local2global.utils.seed
+=======================
+
+.. currentmodule:: local2global.utils
+
+.. autofunction:: seed

@@ -1,4 +1,7 @@
 #! /bin/usr/env python3
+
+"""Generate synthetic test data"""
+
 import csv
 
 import numpy as np

@@ -22,9 +22,9 @@ patches as input and aligns them to obtain a global embedding. The alignment ste
 References
 +++++++++++
 
-.. [#l2g] L. G. S. Jeub, G. Colavizza, X. Dong, M. Bazzi, M. Cucuringu (2021). Local2Global: Scaling global representation learning on graphs via local training. DLG-KDD'21. `arXiv:2107.12224 [cs.LG] <https://arxiv.org/abs/2107.12224>`_
+.. [#l2g] \L. G. S. Jeub, G. Colavizza, X. Dong, M. Bazzi, M. Cucuringu (2021). Local2Global: Scaling global representation learning on graphs via local training. DLG-KDD'21. `arXiv:2107.12224 [cs.LG] <https://arxiv.org/abs/2107.12224>`_
 
-.. [#eigsync] M. Cucuringu, Y. Lipman, A. Singer (2012). Sensor network localization by eigenvector synchronization over the euclidean group. ACM Transactions on Sensor Networks 8.3. DOI: `10.1145/2240092.2240093 <https://doi.org/10.1145/2240092.2240093>`_
+.. [#eigsync] \M. Cucuringu, Y. Lipman, A. Singer (2012). Sensor network localization by eigenvector synchronization over the euclidean group. ACM Transactions on Sensor Networks 8.3. DOI: `10.1145/2240092.2240093 <https://doi.org/10.1145/2240092.2240093>`_
 
 
 .. toctree::

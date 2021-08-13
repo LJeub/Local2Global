@@ -5,8 +5,8 @@
 
 Computation times
 =================
-**00:02.705** total execution time for **usage** files:
+**00:22.092** total execution time for **usage** files:
 
 +-----------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_usage_usage.py` (``usage.py``) | 00:02.705 | 0.0 MB |
+| :ref:`sphx_glr_usage_usage.py` (``usage.py``) | 00:22.092 | 0.0 MB |
 +-----------------------------------------------+-----------+--------+

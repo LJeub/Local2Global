@@ -40,7 +40,25 @@ The usage example assumes the package is imported as:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 13-25
+.. GENERATED FROM PYTHON SOURCE LINES 13-14
+
+For consistent results, fix the seed for the random number generator:
+
+.. GENERATED FROM PYTHON SOURCE LINES 14-17
+
+.. code-block:: default
+
+
+    l2g.utils.seed(42)
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 18-30
 
 Generate synthetic test data and patches
 ----------------------------------------
@@ -55,30 +73,12 @@ For illustration and testing purposes, the package contains code to generate art
 (see :py:mod:`local2global.example`).
 This is not imported by default and to make it available use:
 
-.. GENERATED FROM PYTHON SOURCE LINES 25-28
-
-.. code-block:: default
-
-
-    import local2global.example as ex
-
-
-
-
-
-
-
-
-.. GENERATED FROM PYTHON SOURCE LINES 29-30
-
-For consistent results, fix the seed for the random number generator:
-
 .. GENERATED FROM PYTHON SOURCE LINES 30-33
 
 .. code-block:: default
 
 
-    l2g.utils.seed(42)
+    import local2global.example as ex
 
 
 
@@ -306,7 +306,7 @@ algorithm unless run with ``realign=True``. We can visualise the reconstruction 
 
 
 .. image:: /usage/images/sphx_glr_usage_003.png
-    :alt: unweighted (Procrustes error: 0.000265)
+    :alt: unweighted (Procrustes error: 0.000361)
     :class: sphx-glr-single-img
 
 
@@ -330,7 +330,7 @@ and
 
 
 .. image:: /usage/images/sphx_glr_usage_004.png
-    :alt: weighted (Procrustes error: 0.000194)
+    :alt: weighted (Procrustes error: 0.000222)
     :class: sphx-glr-single-img
 
 
@@ -340,7 +340,7 @@ and
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.036 seconds)
+   **Total running time of the script:** ( 0 minutes  2.705 seconds)
 
 
 .. _sphx_glr_download_usage_usage.py:

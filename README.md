@@ -10,7 +10,7 @@ patches as input and aligns them to obtain a global embedding. The alignment ste
 The `local2global` package can be installed using `pip`. Simply run
 
 ```
-pip install git+ssh://git@github.com/LJeub/Local2Global.git@master  
+pip install git+https://github.com/LJeub/Local2Global.git@master  
 ```
 
 

@@ -10,6 +10,11 @@ Usage
 import local2global as l2g
 
 # %%
+# For consistent results, fix the seed for the random number generator:
+
+l2g.utils.seed(42)
+
+# %%
 # Generate synthetic test data and patches
 # ----------------------------------------
 #
@@ -24,11 +29,6 @@ import local2global as l2g
 # This is not imported by default and to make it available use:
 
 import local2global.example as ex
-
-# %%
-# For consistent results, fix the seed for the random number generator:
-
-l2g.utils.seed(42)
 
 # %%
 # Also import matplotlib to visualise the results:

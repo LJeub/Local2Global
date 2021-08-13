@@ -16,7 +16,7 @@ _____________
 
 Python implementation of the ``local2global`` patch embedding synchronisation
 method used in [#l2g]_. This code uses embeddings for a set of overlapping
-patches as input and aligns them to obtain a global embedding. The alignment step is based on the eigenvector synchronisation method of [#eigsync]_. Source code is hosted on `GitHub <https://github.com/LJeub/Local2Global.git>`.
+patches as input and aligns them to obtain a global embedding. The alignment step is based on the eigenvector synchronisation method of [#eigsync]_. Source code is hosted on `GitHub <https://github.com/LJeub/Local2Global.git>`_.
 
 
 References

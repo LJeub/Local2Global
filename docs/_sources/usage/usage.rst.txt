@@ -71,9 +71,27 @@ This is not imported by default and to make it available use:
 
 .. GENERATED FROM PYTHON SOURCE LINES 29-30
 
-Also import matplotlib to visualise the results:
+For consistent results, fix the seed for the random number generator:
 
 .. GENERATED FROM PYTHON SOURCE LINES 30-33
+
+.. code-block:: default
+
+
+    l2g.utils.seed(42)
+
+
+
+
+
+
+
+
+.. GENERATED FROM PYTHON SOURCE LINES 34-35
+
+Also import matplotlib to visualise the results:
+
+.. GENERATED FROM PYTHON SOURCE LINES 35-38
 
 .. code-block:: default
 
@@ -87,13 +105,13 @@ Also import matplotlib to visualise the results:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 34-37
+.. GENERATED FROM PYTHON SOURCE LINES 39-42
 
 First generate a ground-truth embedding using :py:func:`~local2global.example.generate_data`. In this example,
 we generate data with 5 clusters, where each cluster has a maximum size of 300 points, points within each cluster are
 normally distributed with a standard deviation of 0.2, and cluster centers are uniformly spaced on the unit circle.
 
-.. GENERATED FROM PYTHON SOURCE LINES 37-40
+.. GENERATED FROM PYTHON SOURCE LINES 42-45
 
 .. code-block:: default
 
@@ -107,11 +125,11 @@ normally distributed with a standard deviation of 0.2, and cluster centers are u
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 41-42
+.. GENERATED FROM PYTHON SOURCE LINES 46-47
 
 Visualise the data:
 
-.. GENERATED FROM PYTHON SOURCE LINES 42-46
+.. GENERATED FROM PYTHON SOURCE LINES 47-51
 
 .. code-block:: default
 
@@ -130,11 +148,11 @@ Visualise the data:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 47-48
+.. GENERATED FROM PYTHON SOURCE LINES 52-53
 
 Next, we split the test data into 10 overlapping patches using :py:func:`~local2global.example.Voronoi_patches`.
 
-.. GENERATED FROM PYTHON SOURCE LINES 48-51
+.. GENERATED FROM PYTHON SOURCE LINES 53-56
 
 .. code-block:: default
 
@@ -148,7 +166,7 @@ Next, we split the test data into 10 overlapping patches using :py:func:`~local2
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 52-69
+.. GENERATED FROM PYTHON SOURCE LINES 57-74
 
 In this case we first identify the patch centers using k-means clustering and assign points to the patch with the
 nearest center and any other patch whose center is within 1.5 times the distance to the nearest center. Patches may be
@@ -168,7 +186,7 @@ implement the same interface and expect a list of :py:class:`~local2global.utils
 :py:func:`~local2global.example.Voronoi_patches`) as the main input and accept some other options to control the
 behaviour. Here we use the default options:
 
-.. GENERATED FROM PYTHON SOURCE LINES 69-72
+.. GENERATED FROM PYTHON SOURCE LINES 74-77
 
 .. code-block:: default
 
@@ -182,14 +200,14 @@ behaviour. Here we use the default options:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 73-77
+.. GENERATED FROM PYTHON SOURCE LINES 78-82
 
 Perturb the patch embeddings
 ++++++++++++++++++++++++++++
 
 For testing we add some random rotations/reflections, shifts and normally distributed noise to the patch embeddings:
 
-.. GENERATED FROM PYTHON SOURCE LINES 77-82
+.. GENERATED FROM PYTHON SOURCE LINES 82-87
 
 .. code-block:: default
 
@@ -205,11 +223,11 @@ For testing we add some random rotations/reflections, shifts and normally distri
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 83-84
+.. GENERATED FROM PYTHON SOURCE LINES 88-89
 
 Visualise the results:
 
-.. GENERATED FROM PYTHON SOURCE LINES 84-89
+.. GENERATED FROM PYTHON SOURCE LINES 89-94
 
 .. code-block:: default
 
@@ -229,11 +247,11 @@ Visualise the results:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 90-91
+.. GENERATED FROM PYTHON SOURCE LINES 95-96
 
 For comparison we also set up a weighted problem with the same noise:
 
-.. GENERATED FROM PYTHON SOURCE LINES 91-94
+.. GENERATED FROM PYTHON SOURCE LINES 96-99
 
 .. code-block:: default
 
@@ -247,14 +265,14 @@ For comparison we also set up a weighted problem with the same noise:
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 95-99
+.. GENERATED FROM PYTHON SOURCE LINES 100-104
 
 Recover global embedding
 ++++++++++++++++++++++++
 
 Use
 
-.. GENERATED FROM PYTHON SOURCE LINES 100-104
+.. GENERATED FROM PYTHON SOURCE LINES 105-109
 
 .. code-block:: default
 
@@ -269,13 +287,13 @@ Use
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 105-108
+.. GENERATED FROM PYTHON SOURCE LINES 110-113
 
 to run the local2global algorithm and reconstruct the global embedding. The results are cached and subsequent calls to
 :py:meth:`~local2global.utils.AlignmentProblem.get_aligned_embedding` return the cached result without rerunning the
 algorithm unless run with ``realign=True``. We can visualise the reconstruction error using
 
-.. GENERATED FROM PYTHON SOURCE LINES 108-113
+.. GENERATED FROM PYTHON SOURCE LINES 113-118
 
 .. code-block:: default
 
@@ -288,18 +306,18 @@ algorithm unless run with ``realign=True``. We can visualise the reconstruction 
 
 
 .. image:: /usage/images/sphx_glr_usage_003.png
-    :alt: unweighted (Procrustes error: 0.000248)
+    :alt: unweighted (Procrustes error: 0.000555)
     :class: sphx-glr-single-img
 
 
 
 
 
-.. GENERATED FROM PYTHON SOURCE LINES 114-115
+.. GENERATED FROM PYTHON SOURCE LINES 119-120
 
 and
 
-.. GENERATED FROM PYTHON SOURCE LINES 115-120
+.. GENERATED FROM PYTHON SOURCE LINES 120-125
 
 .. code-block:: default
 
@@ -312,7 +330,7 @@ and
 
 
 .. image:: /usage/images/sphx_glr_usage_004.png
-    :alt: weighted (Procrustes error: 0.000216)
+    :alt: weighted (Procrustes error: 0.000331)
     :class: sphx-glr-single-img
 
 
@@ -322,7 +340,7 @@ and
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.407 seconds)
+   **Total running time of the script:** ( 0 minutes  2.580 seconds)
 
 
 .. _sphx_glr_download_usage_usage.py:

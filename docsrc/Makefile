@@ -16,6 +16,7 @@ clean:
 	rm -rf $(BUILDDIR)/*
 	rm -rf $(SOURCEDIR)/usage/
 	rm -rf $(SOURCEDIR)/reference/
+	rm -rf ../docs/*
 
 github:
 	@make html

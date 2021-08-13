@@ -26,6 +26,11 @@ import local2global as l2g
 import local2global.example as ex
 
 # %%
+# For consistent results, fix the seed for the random number generator:
+
+l2g.utils.seed(42)
+
+# %%
 # Also import matplotlib to visualise the results:
 
 import matplotlib.pyplot as plt

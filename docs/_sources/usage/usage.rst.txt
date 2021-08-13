@@ -306,7 +306,7 @@ algorithm unless run with ``realign=True``. We can visualise the reconstruction 
 
 
 .. image:: /usage/images/sphx_glr_usage_003.png
-    :alt: unweighted (Procrustes error: 0.000555)
+    :alt: unweighted (Procrustes error: 0.000265)
     :class: sphx-glr-single-img
 
 
@@ -330,7 +330,7 @@ and
 
 
 .. image:: /usage/images/sphx_glr_usage_004.png
-    :alt: weighted (Procrustes error: 0.000331)
+    :alt: weighted (Procrustes error: 0.000194)
     :class: sphx-glr-single-img
 
 
@@ -340,7 +340,7 @@ and
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  2.580 seconds)
+   **Total running time of the script:** ( 0 minutes  3.036 seconds)
 
 
 .. _sphx_glr_download_usage_usage.py:

@@ -13,7 +13,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import local2global
 
 # -- Project information -----------------------------------------------------
 
@@ -22,7 +22,8 @@ copyright = '2021, Lucas G. S. Jeub'
 author = 'Lucas G. S. Jeub'
 
 # The full version, including alpha/beta/rc tags
-release = '0.1'
+release = local2global.__version__
+version = release
 
 
 # -- General configuration ---------------------------------------------------
@@ -67,6 +68,10 @@ exclude_patterns = []
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+
+html_theme_options = {
+    'display_version': True,
+}
 
 # html_sidebars = {'**': ['about.html','navigation.html','searchbox.html']}
 

@@ -33,7 +33,7 @@ def iter_seed(it):
 
 # test parameters
 noise_scales = np.linspace(0, 0.1, 11)[1:]
-test_classes = [ut.AlignmentProblem,  ut.WeightedAlignmentProblem]
+test_classes = [ut.AlignmentProblem,  ut.WeightedAlignmentProblem, ut.SVDAlignmentProblem]
 dim = [2, 4, 8]
 min_overlap = [d + 1 for d in dim]
 tol = 1e-6

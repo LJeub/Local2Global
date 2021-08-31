@@ -602,3 +602,48 @@ class WeightedAlignmentProblem(AlignmentProblem):
         return ov
 
 
+class SVDAlignmentProblem(WeightedAlignmentProblem):
+    def _synchronise(self, matrix: ss.spmatrix, blocksize=1, symmetric=False):
+        """Compute synchronised group elements from matrix
+        :param matrix: matrix to synchronise
+        :param blocksize: size of group element blocks
+        """
+        dim = matrix.shape[0]
+        if blocksize == 1:
+            # leading eigenvector is much easier to compute in this case
+            eigs, vecs = ss.linalg.eigs(matrix, k=1, v0=rg.normal(size=dim))
+            eigs = eigs.real
+            vecs = vecs.real
+        else:
+            B = matrix.T - ss.identity(dim)
+            if dim < 5*blocksize:
+                B @= B.T
+                B += ss.identity(dim)
+                # this uses a lot of memory for large matrices due to computing full LU factorisation
+                eigs, vecs = ss.linalg.eigsh(B, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
+                                             mode='buckling')
+            else:
+                tol = dim * 1e-12
+                v0 = rg.normal(size=(dim, blocksize))
+
+                def matmat(x):
+                    return B @ (B.T @ x)
+                B_op = ss.linalg.LinearOperator((dim, dim), matvec=matmat, matmat=matmat, rmatmat=matmat)
+
+                if self.verbose:
+                    print('computing ilu')
+                # ILU helps but maybe could do better
+                ilu = ss.linalg.spilu(B.tocsc()-max(1e-5, tol**0.5)*ss.identity(dim), drop_tol=0.5*tol)
+                M = ss.linalg.LinearOperator((dim, dim), lambda x: ilu.solve(ilu.solve(x), 'T'))
+
+                # TODO: could use pytorch implementation to run this on GPU
+                if self.verbose:
+                    print('finding eigenvectors')
+                eigs, vecs = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=150,
+                                              verbosityLevel=self.verbose, tol=tol)
+        if self.verbose:
+            print(f"eigs: {eigs}")
+        order = np.argsort(np.abs(eigs))
+        vecs = vecs[:, order[:blocksize]].real
+        vecs.shape = (dim//blocksize, blocksize, blocksize)
+        return vecs

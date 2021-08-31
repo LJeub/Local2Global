@@ -1,6 +1,6 @@
 from pkg_resources import get_distribution, DistributionNotFound
 
-from .utils import Patch, AlignmentProblem, WeightedAlignmentProblem
+from .utils import Patch, AlignmentProblem, WeightedAlignmentProblem, SVDAlignmentProblem
 
 
 try:

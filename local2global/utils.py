@@ -432,16 +432,30 @@ class AlignmentProblem:
             # TODO: probably doesn't need to be that accurate, this is for testing
         return translations
 
-    def mean_embedding(self):
+    def mean_embedding(self, out=None):
         """
         Compute node embeddings as the centroid over patch embeddings
+
+        Args:
+            out: numpy array to write results to (supply a memmap for large-scale problems that do not fit in ram)
         """
-        embedding = np.empty((self.n_nodes, self.dim))
+        if out is None:
+            embedding = np.empty((self.n_nodes, self.dim))
+        else:
+            embedding = out
+
         for node, patch_list in enumerate(self.patch_index):
             embedding[node] = np.mean([self.patches[p].get_coordinate(node) for p in patch_list], axis=0)
         return embedding
 
-    def get_aligned_embedding(self, scale=False, realign=False):
+    def align_patches(self, scale=False):
+        if scale:
+            self.scale_patches()
+        self.rotate_patches()
+        self.translate_patches()
+        return self
+
+    def get_aligned_embedding(self, scale=False, realign=False, out=None):
         """Return the aligned embedding
 
         Args:
@@ -452,11 +466,7 @@ class AlignmentProblem:
             n_nodes x dim numpy array of embedding coordinates
         """
         if realign or self._aligned_embedding is None:
-            if scale:
-                self.scale_patches()
-            self.rotate_patches()
-            self.translate_patches()
-            self._aligned_embedding = self.mean_embedding()
+            self._aligned_embedding = self.align_patches(scale).mean_embedding(out)
         return self._aligned_embedding
 
     def save_patches(self, filename):

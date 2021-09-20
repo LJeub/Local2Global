@@ -173,7 +173,7 @@ class Patch:
     coordinates = None
     """patch embedding coordinates"""
 
-    def __init__(self, nodes, coordinates):
+    def __init__(self, nodes, coordinates=None):
         """
         Initialise a patch from a list of nodes and corresponding coordinates
 
@@ -182,7 +182,9 @@ class Patch:
             coordinates: Array-like of node coordinates of shape (len(nodes), dim)
         """
         self.index = {int(n): i for i, n in enumerate(nodes)}
-        self.coordinates = np.asanyarray(coordinates)
+        if coordinates is not None:
+            self.coordinates = np.asanyarray(coordinates)
+
 
     @property
     def shape(self):
@@ -218,6 +220,19 @@ class Patch:
         instance.index = dict(self.index)
         instance.coordinates = np.array(self.coordinates)
         return instance
+
+
+class FilePatch(Patch):
+    def __init__(self, nodes, filename):
+        super().__init__(nodes, None)
+        self.filename = filename
+
+    @property
+    def coordinates(self):
+        return np.load(self.filename, mmap_mode='r+')
+
+    def __copy__(self):
+        raise NotImplementedError('Cannot copy FilePatch')
 
 
 class AlignmentProblem:

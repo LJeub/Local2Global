@@ -347,6 +347,7 @@ class AlignmentProblem:
             # track transformations
             self.scales[i] *= scale
             self.shifts[i] *= scale
+        return self
 
     def calc_synchronised_scales(self, max_scale=1e8):
         """
@@ -382,6 +383,7 @@ class AlignmentProblem:
             # track transformations
             self.rotations[i] = self.rotations[i] @ rot.T
             self.shifts[i] = self.shifts[i] @ rot.T
+        return self
 
     def calc_synchronised_rotations(self):
         """Compute the orthogonal transformations that best align the patches"""
@@ -405,6 +407,7 @@ class AlignmentProblem:
             self.patches[i].coordinates += t
             # keep track of transformations
             self.shifts[i] += t
+        return self
 
     def calc_synchronised_translations(self):
         """Compute translations that best align the patches"""

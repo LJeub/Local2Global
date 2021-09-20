@@ -182,7 +182,7 @@ class Patch:
             coordinates: Array-like of node coordinates of shape (len(nodes), dim)
         """
         self.index = {int(n): i for i, n in enumerate(nodes)}
-        self.coordinates = np.array(coordinates)
+        self.coordinates = np.asanyarray(coordinates)
 
     @property
     def shape(self):

@@ -181,6 +181,7 @@ class Patch:
             nodes: Iterable of integer node indeces for patch
             coordinates: Array-like of node coordinates of shape (len(nodes), dim)
         """
+        self.nodes = np.asanyarray(nodes)
         self.index = {int(n): i for i, n in enumerate(nodes)}
         if coordinates is not None:
             self.coordinates = np.asanyarray(coordinates)
@@ -459,8 +460,12 @@ class AlignmentProblem:
         else:
             embedding = out
 
-        for node, patch_list in enumerate(self.patch_index):
-            embedding[node] = np.mean([self.patches[p].get_coordinate(node) for p in patch_list], axis=0)
+        count = np.array([len(patch_list) for patch_list in self.patch_index])
+        for patch in self.patches:
+            embedding[patch.nodes] += patch.coordinates
+
+        embedding /= count[:, None]
+
         return embedding
 
     def align_patches(self, scale=False):

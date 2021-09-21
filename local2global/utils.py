@@ -666,7 +666,11 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 if self.verbose:
                     print('computing ilu')
                 # ILU helps but maybe could do better
-                ilu = ss.linalg.spilu(B.tocsc()-max(1e-5, tol**0.5)*ss.identity(dim), drop_tol=0.5*tol)
+                spilu_B = B.tocsc() - max(1e-5, tol ** 0.5) * ss.identity(dim)
+                spilu_B.indices = spilu_B.indices.astype(np.int64, copy=False)  # does this fix integer overflow issue in spilu?
+                spilu_B.indptr = spilu_B.indptr.astype(np.int64, copy=False)
+
+                ilu = ss.linalg.spilu(spilu_B, drop_tol=0.5*tol)
                 M = ss.linalg.LinearOperator((dim, dim), lambda x: ilu.solve(ilu.solve(x), 'T'))
 
                 # TODO: could use pytorch implementation to run this on GPU

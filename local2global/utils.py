@@ -1,4 +1,5 @@
 """Implementation of local2global algorithm"""
+import sys
 
 import scipy as sp
 from scipy import sparse as ss
@@ -12,6 +13,8 @@ from typing import List, Callable, Any
 import networkx as nx
 from pathlib import Path
 import json
+
+from tqdm.auto import tqdm
 
 rg = np.random.default_rng()
 eps = np.finfo(float).eps
@@ -461,7 +464,7 @@ class AlignmentProblem:
             embedding = out
 
         count = np.array([len(patch_list) for patch_list in self.patch_index])
-        for patch in self.patches:
+        for patch in tqdm(self.patches, file=sys.stdout, smoothing=0):
             embedding[patch.nodes] += patch.coordinates
 
         embedding /= count[:, None]

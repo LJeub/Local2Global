@@ -14,6 +14,8 @@ import networkx as nx
 from pathlib import Path
 import json
 
+import ilupp
+
 from tqdm.auto import tqdm
 
 rg = np.random.default_rng()
@@ -221,7 +223,8 @@ class Patch:
     def __copy__(self):
         """return a copy of the patch"""
         instance = self.__new__(type(self))
-        instance.index = dict(self.index)
+        instance.index = self.index
+        instance.nodes = self.nodes
         instance.coordinates = np.array(self.coordinates)
         return instance
 
@@ -670,17 +673,28 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                     print('computing ilu')
                 # ILU helps but maybe could do better
                 spilu_B = B.tocsc() - max(1e-5, tol ** 0.5) * ss.identity(dim)
-                spilu_B.indices = spilu_B.indices.astype(np.int64, copy=False)  # does this fix integer overflow issue in spilu?
-                spilu_B.indptr = spilu_B.indptr.astype(np.int64, copy=False)
+                # fill_in = 100
+                # param = ilupp.iluplusplus_precond_parameter()
+                # param.default_configuration(11)
+                # ilu = ilupp.ILUppPreconditioner(spilu_B, params=param)
+                # ilu = ilupp.ILUTPreconditioner(spilu_B, fill_in=fill_in, threshold=1e-5)
+                ilu = ilupp.ILU0Preconditioner(spilu_B)
 
-                ilu = ss.linalg.spilu(spilu_B, drop_tol=0.5*tol)
-                M = ss.linalg.LinearOperator((dim, dim), lambda x: ilu.solve(ilu.solve(x), 'T'))
+                def cond_solve(x):
+                    y = x.copy()
+                    ilu.apply(y)
+                    ilu.apply_t(y)
+                    return y + 1.e-5 * x
 
+                M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve)
+                #
                 # TODO: could use pytorch implementation to run this on GPU
                 if self.verbose:
                     print('finding eigenvectors')
-                eigs, vecs = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=150,
-                                              verbosityLevel=self.verbose, tol=tol)
+                eigs, vecs = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=500,
+                                              verbosityLevel=self.verbose)
+                # eigs, vecs = ss.linalg.lobpcg(B_op, v0, largest=False, maxiter=500,
+                #                               verbosityLevel=self.verbose, tol=tol)
         if self.verbose:
             print(f"eigs: {eigs}")
         order = np.argsort(np.abs(eigs))

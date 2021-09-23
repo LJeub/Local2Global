@@ -654,37 +654,43 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
             eigs = eigs.real
             vecs = vecs.real
         else:
-            B = matrix.T - ss.identity(dim)
             if dim < 5*blocksize:
-                B @= B.T
-                B += ss.identity(dim)
+                matrix = matrix.T - ss.identity(dim)
+                matrix @= matrix.T
+                matrix += ss.identity(dim)
                 # this uses a lot of memory for large matrices due to computing full LU factorisation
-                eigs, vecs = ss.linalg.eigsh(B, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
+                eigs, vecs = ss.linalg.eigsh(matrix, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
                                              mode='buckling')
             else:
-                tol = dim * 1e-12
+                tol = np.sqrt(eps)*dim / 2
+                print(tol)
+                pre_factor = -tol*8
+                post_factor = -tol*8
+                matrix = matrix.tocsc(copy=False) + (pre_factor-1)*ss.identity(dim)
+
                 v0 = rg.normal(size=(dim, blocksize))
+                # v0 = np.tile(np.eye(blocksize), (dim // blocksize, 1))
 
                 def matmat(x):
-                    return B @ (B.T @ x)
+                    x1 = matrix.T @ x - pre_factor * x
+                    return matrix @ x1 - pre_factor * x1
                 B_op = ss.linalg.LinearOperator((dim, dim), matvec=matmat, matmat=matmat, rmatmat=matmat)
 
                 if self.verbose:
                     print('computing ilu')
                 # ILU helps but maybe could do better
-                spilu_B = B.tocsc() - max(1e-5, tol ** 0.5) * ss.identity(dim)
                 # fill_in = 100
                 # param = ilupp.iluplusplus_precond_parameter()
                 # param.default_configuration(11)
                 # ilu = ilupp.ILUppPreconditioner(spilu_B, params=param)
                 # ilu = ilupp.ILUTPreconditioner(spilu_B, fill_in=fill_in, threshold=1e-5)
-                ilu = ilupp.ILU0Preconditioner(spilu_B)
+                ilu = ilupp.ILU0Preconditioner(matrix)
 
                 def cond_solve(x):
                     y = x.copy()
                     ilu.apply(y)
                     ilu.apply_t(y)
-                    return y + 1.e-5 * x
+                    return y + post_factor*y
 
                 M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve)
                 #
@@ -692,7 +698,7 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 if self.verbose:
                     print('finding eigenvectors')
                 eigs, vecs = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=500,
-                                              verbosityLevel=self.verbose)
+                                              verbosityLevel=self.verbose, tol=tol)
                 # eigs, vecs = ss.linalg.lobpcg(B_op, v0, largest=False, maxiter=500,
                 #                               verbosityLevel=self.verbose, tol=tol)
         if self.verbose:

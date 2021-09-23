@@ -642,6 +642,14 @@ class WeightedAlignmentProblem(AlignmentProblem):
 
 
 class SVDAlignmentProblem(WeightedAlignmentProblem):
+    def calc_synchronised_rotations(self):
+        """Compute the orthogonal transformations that best align the patches"""
+        rots = self._transform_matrix(relative_orthogonal_transform, self.dim, symmetric_weights=False)
+        vecs = self._synchronise(rots, blocksize=self.dim, symmetric=True)
+        for mat in vecs:
+            mat[:] = nearest_orthogonal(mat)
+        return vecs
+
     def _synchronise(self, matrix: ss.spmatrix, blocksize=1, symmetric=False):
         """Compute synchronised group elements from matrix
         :param matrix: matrix to synchronise
@@ -662,10 +670,10 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 eigs, vecs = ss.linalg.eigsh(matrix, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
                                              mode='buckling')
             else:
-                tol = np.sqrt(eps)*dim / 2
+                tol = np.sqrt(eps)*dim
                 print(tol)
-                pre_factor = -tol*8
-                post_factor = -tol*8
+                pre_factor = tol
+                post_factor = pre_factor
                 matrix = matrix.tocsc(copy=False) + (pre_factor-1)*ss.identity(dim)
 
                 v0 = rg.normal(size=(dim, blocksize))

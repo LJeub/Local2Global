@@ -184,7 +184,7 @@ class Patch:
 
         Args:
             nodes: Iterable of integer node indeces for patch
-            coordinates: Array-like of node coordinates of shape (len(nodes), dim)
+            coordinates: filename for coordinate file to be loaded on demand
         """
         self.nodes = np.asanyarray(nodes)
         self.index = {int(n): i for i, n in enumerate(nodes)}
@@ -232,11 +232,19 @@ class Patch:
 class FilePatch(Patch):
     def __init__(self, nodes, filename):
         super().__init__(nodes, None)
-        self.filename = filename
+        self.filename = Path(filename)
 
     @property
     def coordinates(self):
         return np.load(self.filename, mmap_mode='r+')
+
+    @coordinates.setter
+    def coordinates(self, value):
+        if isinstance(value, np.memmap):
+            if self.filename.samefile(value.filename):
+                value.flush()
+        else:
+            self.coordinates[:] = value
 
     def __copy__(self):
         raise NotImplementedError('Cannot copy FilePatch')

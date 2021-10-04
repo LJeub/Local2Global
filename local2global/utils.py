@@ -706,7 +706,7 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 def cond_solve(x):
                     y = x.copy()
                     ilu.apply(y)
-                    ilu.apply_t(y)
+                    ilu.apply_trans(y)
                     return y + post_factor*y
 
                 M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve)

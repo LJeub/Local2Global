@@ -470,9 +470,10 @@ class AlignmentProblem:
             out: numpy array to write results to (supply a memmap for large-scale problems that do not fit in ram)
         """
         if out is None:
-            embedding = np.empty((self.n_nodes, self.dim))
+            embedding = np.zeros((self.n_nodes, self.dim))
         else:
             embedding = out
+            embedding[:] = 0
 
         count = np.array([len(patch_list) for patch_list in self.patch_index])
         for patch in tqdm(self.patches, file=sys.stdout, smoothing=0):

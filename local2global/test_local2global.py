@@ -41,9 +41,8 @@ tol = 1e-6
 # test data
 points_list = [ex.generate_data(n_clusters=5, scale=1, std=0.2, max_size=2000, dim=d) for d in dim]
 patches_list = [ex.Voronoi_patches(points=points, sample_size=100, min_overlap=2*mo, min_degree=10,
-                                          eps=1+1/d**0.5, return_graph=False, kmeans=True)
-           for points, d, mo in zip(points_list, dim, min_overlap)]
-
+                                   eps=1+1/d**0.5, return_graph=False, kmeans=True)
+                for points, d, mo in zip(points_list, dim, min_overlap)]
 
 
 @pytest.mark.parametrize("it", range(100))

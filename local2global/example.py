@@ -378,16 +378,16 @@ if __name__ == '__main__':
     parser.add_argument('--kmeans', action='store_true', help="use kmeans to find patch centers")
     parser.add_argument('--max_var', default=0.2, type=float, help="Cluster dispersion")
     parser.add_argument('--max_size', default=2000, type=int, help="Max cluster size")
-    parser.add_argument('--sample_size', default=100, type=int, help="Number of patches")
+    parser.add_argument('--sample_size', default=10, type=int, help="Number of patches")
     parser.add_argument('--dim', default=2, type=int, help="Data dimension")
     parser.add_argument('--eps', default=1.6, type=float, help="Tolerance for patch overlaps")
     parser.add_argument('--min_overlap', type=int, default=10,
                         help="Minimum patch overlap for connectivity constraint")
     parser.add_argument('--min_recovery_overlap', type=int, default=[], action='append',
                         help='Minimum patch overlap for recovery (defaults to min_overlap)')
-    parser.add_argument('--min_size', type=int, default=None, help="Minimum patch size")
+    parser.add_argument('--min_size', type=int, default=10, help="Minimum patch size")
     parser.add_argument('--min_degree', type=int, default=None, help="Minimum patch degree")
-    parser.add_argument('--max_noise', default=0.2, type=float, help="Maximum noise level")
+    parser.add_argument('--max_noise', default=0.3, type=float, help="Maximum noise level")
     parser.add_argument('--steps', default=101, type=int, help="Number of steps for noise profile")
     parser.add_argument('--plot_noise', '-p', default=[], action='append', type=float,
                         help="Noise level to plot (can be specified multiple times)")
@@ -399,8 +399,8 @@ if __name__ == '__main__':
         args.min_recovery_overlap = None
 
     ut.seed(args.seed)
-    problem_types = [ut.AlignmentProblem, ut.WeightedAlignmentProblem]
-    labels = ['standard', 'weighted']
+    problem_types = [ut.AlignmentProblem, ut.WeightedAlignmentProblem, ut.SVDAlignmentProblem]
+    labels = ['standard', 'weighted', 'svd-weighted']
 
     # generate random data
     points = generate_data(n_clusters=args.n_clusters, scale=args.max_shift, std=args.max_var,

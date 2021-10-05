@@ -679,10 +679,11 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 eigs, vecs = ss.linalg.eigsh(matrix, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
                                              mode='buckling')
             else:
-                tol = np.sqrt(eps)*dim
+                tol = np.sqrt(eps)*blocksize
+                # tol = 0.1
                 print(tol)
-                pre_factor = tol
-                post_factor = pre_factor
+                pre_factor = 0
+                post_factor = 0
                 matrix = matrix.tocsc(copy=False) + (pre_factor-1)*ss.identity(dim)
 
                 v0 = rg.normal(size=(dim, blocksize))
@@ -697,11 +698,15 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                     print('computing ilu')
                 # ILU helps but maybe could do better
                 # fill_in = 100
-                # param = ilupp.iluplusplus_precond_parameter()
-                # param.default_configuration(11)
-                # ilu = ilupp.ILUppPreconditioner(spilu_B, params=param)
-                # ilu = ilupp.ILUTPreconditioner(spilu_B, fill_in=fill_in, threshold=1e-5)
-                ilu = ilupp.ILU0Preconditioner(matrix)
+                if dim < 8000:
+                    print('using ILUpp')
+                    # use more effective but harder to compute preconditioner
+                    param = ilupp.iluplusplus_precond_parameter()
+                    param.default_configuration(10)
+                    ilu = ilupp.ILUppPreconditioner(matrix, params=param)
+                else:
+                    print('using ILU0')
+                    ilu = ilupp.ILU0Preconditioner(matrix)
 
                 def cond_solve(x):
                     y = x.copy()

@@ -307,10 +307,15 @@ class LazyCoordinates:
         return new
 
     def __getitem__(self, item):
-        x = self._x[item]
+        if isinstance(item, tuple):
+            x = self._x[item[0]]
+        else:
+            x = self._x[item]
         x = x * self._scale
         x = x @ self._rot
         x += self._shift
+        if isinstance(item, tuple):
+            return x[(slice(None), *item[1:])]
         return x
 
     def __repr__(self):

@@ -476,7 +476,7 @@ class AlignmentProblem:
             embedding[:] = 0
 
         count = np.array([len(patch_list) for patch_list in self.patch_index])
-        for patch in tqdm(self.patches, file=sys.stdout, smoothing=0):
+        for patch in tqdm(self.patches, file=sys.stdout, smoothing=0, position=0, leave=False, desc='Compute mean embedding'):
             embedding[patch.nodes] += patch.coordinates
 
         embedding /= count[:, None]

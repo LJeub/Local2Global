@@ -225,29 +225,114 @@ class Patch:
         instance = self.__new__(type(self))
         instance.index = self.index
         instance.nodes = self.nodes
-        instance.coordinates = np.array(self.coordinates)
+        instance.coordinates = copy.copy(self.coordinates)
         return instance
+
+
+class LazyCoordinates:
+    def __init__(self, x, shift=None, scale=None, rot=None):
+        self._x = x
+        dim = self.shape[1]
+        if shift is None:
+            self._shift = np.zeros((1, dim))
+        else:
+            self._shift = shift
+
+        if scale is None:
+            self._scale = 1
+        else:
+            self._scale = scale
+
+        if rot is None:
+            self._rot = np.eye(dim)
+        else:
+            self._rot = rot
+
+    @property
+    def shape(self):
+        return self._x.shape
+
+    def __copy__(self):
+        return self.__class__(self._x, self._shift.copy(), self._scale, self._rot.copy())
+
+    def __array__(self, dtype=None):
+        return np.asanyarray(self[:], dtype=dtype)
+
+    def __iadd__(self, other):
+        self._shift += other
+        return self
+
+    def __add__(self, other):
+        new = copy.copy(self)
+        new += other
+        return new
+
+    def __isub__(self, other):
+        self._shift -= other
+        return self
+
+    def __sub__(self, other):
+        new = copy.copy(self)
+        new -= other
+        return new
+
+    def __imul__(self, other):
+        self._scale *= other
+        self._shift *= other
+        return self
+
+    def __mul__(self, other):
+        new = copy.copy(self)
+        new *= other
+        return new
+
+    def __itruediv__(self, other):
+        self._scale /= other
+        self._shift /= other
+        return self
+
+    def __truediv__(self, other):
+        new = copy.copy(self)
+        new /= other
+        return new
+
+    def __imatmul__(self, other):
+        self._rot = self._rot @ other
+        self._shift = self._shift @ other
+        return self
+
+    def __matmul__(self, other):
+        new = copy.copy(self)
+        new @= other
+        return new
+
+    def __getitem__(self, item):
+        x = self._x[item]
+        x = x * self._scale
+        x = x @ self._rot
+        x += self._shift
+        return x
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}({repr(self[:])})'
+
+
+class LazyFileCoordinates(LazyCoordinates):
+    @property
+    def _x(self):
+        return np.load(self._filename, mmap_mode='r')
+
+    @_x.setter
+    def _x(self, other):
+        self._filename = other
+
+    def __copy__(self):
+        return self.__class__(self._filename, self._shift.copy(), self._scale, self._rot.copy())
 
 
 class FilePatch(Patch):
     def __init__(self, nodes, filename):
-        super().__init__(nodes, None)
-        self.filename = Path(filename)
-
-    @property
-    def coordinates(self):
-        return np.load(self.filename, mmap_mode='r+')
-
-    @coordinates.setter
-    def coordinates(self, value):
-        if isinstance(value, np.memmap):
-            if self.filename.samefile(value.filename):
-                value.flush()
-        else:
-            self.coordinates[:] = value
-
-    def __copy__(self):
-        raise NotImplementedError('Cannot copy FilePatch')
+        super().__init__(nodes, LazyFileCoordinates(filename))
 
 
 class AlignmentProblem:

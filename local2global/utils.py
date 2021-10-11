@@ -189,7 +189,10 @@ class Patch:
         self.nodes = np.asanyarray(nodes)
         self.index = {int(n): i for i, n in enumerate(nodes)}
         if coordinates is not None:
-            self.coordinates = np.asanyarray(coordinates)
+            if not isinstance(coordinates, LazyCoordinates):
+                self.coordinates = np.asanyarray(coordinates)
+            else:
+                self.coordinates = coordinates
 
 
     @property

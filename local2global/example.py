@@ -4,6 +4,7 @@
 
 import csv
 
+import local2global.utils.patch
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
@@ -197,9 +198,9 @@ def Voronoi_patches(points, sample_size=100, min_degree=None, min_overlap=None, 
                 break
 
     if return_graph:
-        return [ut.Patch(nodes, points[nodes, :]) for nodes in node_lists], patch_network
+        return [local2global.utils.patch.Patch(nodes, points[nodes, :]) for nodes in node_lists], patch_network
     else:
-        return [ut.Patch(nodes, points[nodes, :]) for nodes in node_lists]
+        return [local2global.utils.patch.Patch(nodes, points[nodes, :]) for nodes in node_lists]
 
 
 def rand_scale_patches(alignment_problem: ut.AlignmentProblem, min_scale=1e-2):

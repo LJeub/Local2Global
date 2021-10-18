@@ -1,4 +1,24 @@
 """Implementation of local2global algorithm"""
+#  Copyright (c) 2021. Lucas G. S. Jeub
+#
+#  Permission is hereby granted, free of charge, to any person obtaining a copy
+#  of this software and associated documentation files (the "Software"), to deal
+#  in the Software without restriction, including without limitation the rights
+#  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+#  copies of the Software, and to permit persons to whom the Software is
+#  furnished to do so, subject to the following conditions:
+#
+#  The above copyright notice and this permission notice shall be included in all
+#  copies or substantial portions of the Software.
+#
+#  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+#  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+#  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+#  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+#  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+#  SOFTWARE.
+
 import sys
 
 import scipy as sp
@@ -17,6 +37,8 @@ import json
 import ilupp
 
 from tqdm.auto import tqdm
+
+from .patch import Patch
 
 rg = np.random.default_rng()
 eps = np.finfo(float).eps
@@ -167,182 +189,6 @@ def relative_scale(coordinates1, coordinates2, clamp=1e8):
     return scale1 / scale2
 
 
-class Patch:
-    """
-    Class for patch embedding
-    """
-
-    index = None
-    """mapping of node index to patch coordinate index"""
-
-    coordinates = None
-    """patch embedding coordinates"""
-
-    def __init__(self, nodes, coordinates=None):
-        """
-        Initialise a patch from a list of nodes and corresponding coordinates
-
-        Args:
-            nodes: Iterable of integer node indeces for patch
-            coordinates: filename for coordinate file to be loaded on demand
-        """
-        self.nodes = np.asanyarray(nodes)
-        self.index = {int(n): i for i, n in enumerate(nodes)}
-        if coordinates is not None:
-            if not isinstance(coordinates, LazyCoordinates):
-                self.coordinates = np.asanyarray(coordinates)
-            else:
-                self.coordinates = coordinates
-
-
-    @property
-    def shape(self):
-        """
-        shape of patch coordinates
-
-        (`shape[0]` is the number of nodes in the patch
-        and `shape[1]` is the embedding dimension)
-        """
-        return self.coordinates.shape
-
-    def get_coordinates(self, nodes):
-        """
-        get coordinates for a list of nodes
-
-        Args:
-            nodes: Iterable of node indeces
-        """
-        return self.coordinates[[self.index[node] for node in nodes], :]
-
-    def get_coordinate(self, node):
-        """
-        get coordinate for a single node
-
-        Args:
-            node: Integer node index
-        """
-        return self.coordinates[self.index[node], :]
-
-    def __copy__(self):
-        """return a copy of the patch"""
-        instance = self.__new__(type(self))
-        instance.index = self.index
-        instance.nodes = self.nodes
-        instance.coordinates = copy.copy(self.coordinates)
-        return instance
-
-
-class LazyCoordinates:
-    def __init__(self, x, shift=None, scale=None, rot=None):
-        self._x = x
-        dim = self.shape[1]
-        if shift is None:
-            self._shift = np.zeros((1, dim))
-        else:
-            self._shift = shift
-
-        if scale is None:
-            self._scale = 1
-        else:
-            self._scale = scale
-
-        if rot is None:
-            self._rot = np.eye(dim)
-        else:
-            self._rot = rot
-
-    @property
-    def shape(self):
-        return self._x.shape
-
-    def __copy__(self):
-        return self.__class__(self._x, self._shift.copy(), self._scale, self._rot.copy())
-
-    def __array__(self, dtype=None):
-        return np.asanyarray(self[:], dtype=dtype)
-
-    def __iadd__(self, other):
-        self._shift += other
-        return self
-
-    def __add__(self, other):
-        new = copy.copy(self)
-        new += other
-        return new
-
-    def __isub__(self, other):
-        self._shift -= other
-        return self
-
-    def __sub__(self, other):
-        new = copy.copy(self)
-        new -= other
-        return new
-
-    def __imul__(self, other):
-        self._scale *= other
-        self._shift *= other
-        return self
-
-    def __mul__(self, other):
-        new = copy.copy(self)
-        new *= other
-        return new
-
-    def __itruediv__(self, other):
-        self._scale /= other
-        self._shift /= other
-        return self
-
-    def __truediv__(self, other):
-        new = copy.copy(self)
-        new /= other
-        return new
-
-    def __imatmul__(self, other):
-        self._rot = self._rot @ other
-        self._shift = self._shift @ other
-        return self
-
-    def __matmul__(self, other):
-        new = copy.copy(self)
-        new @= other
-        return new
-
-    def __getitem__(self, item):
-        if isinstance(item, tuple):
-            x = self._x[item[0]]
-        else:
-            x = self._x[item]
-        x = x * self._scale
-        x = x @ self._rot
-        x += self._shift
-        if isinstance(item, tuple):
-            return x[(slice(None), *item[1:])]
-        return x
-
-    def __repr__(self):
-        return f'{self.__class__.__name__}({repr(self[:])})'
-
-
-class LazyFileCoordinates(LazyCoordinates):
-    @property
-    def _x(self):
-        return np.load(self._filename, mmap_mode='r')
-
-    @_x.setter
-    def _x(self, other):
-        self._filename = other
-
-    def __copy__(self):
-        return self.__class__(self._filename, self._shift.copy(), self._scale, self._rot.copy())
-
-
-class FilePatch(Patch):
-    def __init__(self, nodes, filename):
-        super().__init__(nodes, LazyFileCoordinates(filename))
-
-
 class AlignmentProblem:
     """
     Implements the standard local2global algorithm using an unweighted patch graph
@@ -418,7 +264,7 @@ class AlignmentProblem:
         # create an index for the patch membership of each node
         self.patch_index = [[] for _ in range(self.n_nodes)]
         for i, patch in enumerate(self.patches):
-            for node in patch.index.keys():
+            for node in patch.nodes:
                 self.patch_index[node].append(i)
 
         # find patch overlaps
@@ -436,11 +282,14 @@ class AlignmentProblem:
         # remove small overlaps
         keys = list(self.patch_overlap.keys())
         for e in keys:
-            if len(self.patch_overlap[e]) < min_overlap:
-                if patch_edges is None:
-                    del self.patch_overlap[e]
-                else:
-                    raise RuntimeError("Patch edges do not satisfy minimum overlap")
+            if self_loops or e[0] != e[1]:
+                if len(self.patch_overlap[e]) < min_overlap:
+                    if patch_edges is None:
+                        del self.patch_overlap[e]
+                    else:
+                        raise RuntimeError("Patch edges do not satisfy minimum overlap")
+            else:
+                del self.patch_overlap[e]  # remove spurious self-loops
 
         # find patch degrees
         self.patch_degrees = [0] * self.n_patches
@@ -565,8 +414,7 @@ class AlignmentProblem:
         if out is None:
             embedding = np.zeros((self.n_nodes, self.dim))
         else:
-            embedding = out
-            embedding[:] = 0
+            embedding = out  # important: needs to be zero-initialised
 
         count = np.array([len(patch_list) for patch_list in self.patch_index])
         for patch in tqdm(self.patches, file=sys.stdout, smoothing=0, position=0, leave=False, desc='Compute mean embedding'):
@@ -694,7 +542,8 @@ class AlignmentProblem:
 
         keys = sorted(self.patch_overlap.keys())
         # TODO: this could be sped up by a factor of two by not computing rotations twice
-        for count, (i, j) in enumerate(keys):
+        for count, (i, j) in tqdm(enumerate(keys), total=len(keys), position=0, leave=False,
+                                  desc='Compute relative transformations'):
             if i == j:
                 element = np.eye(dim)
             else:

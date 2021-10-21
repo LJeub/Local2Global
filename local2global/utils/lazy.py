@@ -243,7 +243,7 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
 
     def __imatmul__(self, other):
         for patch in self.patches:
-            patch.coordinates @= other
+            patch.coordinates = patch.coordinates @ other
         return self
 
     def __copy__(self):

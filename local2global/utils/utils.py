@@ -615,7 +615,7 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
         else:
             if dim < 5*blocksize:
                 matrix = matrix.T - ss.identity(dim)
-                matrix @= matrix.T
+                matrix = matrix @ matrix.T
                 matrix += ss.identity(dim)
                 # this uses a lot of memory for large matrices due to computing full LU factorisation
                 eigs, vecs = ss.linalg.eigsh(matrix, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,

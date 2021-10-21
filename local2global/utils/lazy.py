@@ -156,6 +156,13 @@ class LazyCoordinates(BaseLazyCoordinates):
 
 
 class LazyFileCoordinates(LazyCoordinates):
+    def __init__(self, filename, *args, **kwargs):
+        with open(filename, 'rb') as f:
+            major, minor = np.lib.format.read_magic(f)
+            shape, *_ = np.lib.format.read_array_header_1_0(f)
+        self._shape = shape
+        super().__init__(filename, *args, **kwargs)
+
     @property
     def _x(self):
         return np.load(self._filename, mmap_mode='r')
@@ -163,6 +170,10 @@ class LazyFileCoordinates(LazyCoordinates):
     @_x.setter
     def _x(self, other):
         self._filename = other
+
+    @property
+    def shape(self):
+        return self._shape
 
     def __copy__(self):
         return self.__class__(self._filename, self._shift.copy(), self._scale, self._rot.copy())

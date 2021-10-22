@@ -94,7 +94,7 @@ class LazyCoordinates(BaseLazyCoordinates):
         if shift is None:
             self._shift = np.zeros((1, dim))
         else:
-            self._shift = shift
+            self._shift = np.array(shift)
 
         if scale is None:
             self._scale = 1
@@ -104,7 +104,7 @@ class LazyCoordinates(BaseLazyCoordinates):
         if rot is None:
             self._rot = np.eye(dim)
         else:
-            self._rot = rot
+            self._rot = np.array(rot)
 
     def save_transform(self, filename):
         np.savez(filename, shift=self._shift, scale=self._scale, rot=self._rot)
@@ -114,7 +114,7 @@ class LazyCoordinates(BaseLazyCoordinates):
         return self._x.shape
 
     def __copy__(self):
-        return self.__class__(self._x, self._shift.copy(), self._scale, self._rot.copy())
+        return self.__class__(self._x, self._shift, self._scale, self._rot)
 
     def __iadd__(self, other):
         self._shift += other
@@ -165,18 +165,18 @@ class LazyFileCoordinates(LazyCoordinates):
 
     @property
     def _x(self):
-        return np.load(self._filename, mmap_mode='r')
+        return np.load(self.filename, mmap_mode='r')
 
     @_x.setter
     def _x(self, other):
-        self._filename = other
+        self.filename = other
 
     @property
     def shape(self):
         return self._shape
 
     def __copy__(self):
-        return self.__class__(self._filename, self._shift.copy(), self._scale, self._rot.copy())
+        return self.__class__(self.filename, self._shift, self._scale, self._rot)
 
 
 class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):

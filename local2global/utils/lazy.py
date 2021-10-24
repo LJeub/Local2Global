@@ -214,10 +214,19 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
     def __array__(self, dtype=None):
         # more efficient
         out = np.zeros(self.shape, dtype=dtype)
-        return self.get_coordinates(self._nodes, out)
+        return self.as_array(out)
 
     def as_array(self, out=None):
-        return self.get_coordinates(self._nodes, out)
+        if out is None:
+            out = np.zeros(self.shape)
+        index = np.empty((self._nodes.max()+1,), dtype=np.int64)
+        index[self._nodes] = np.arange(len(self._nodes))
+        count = np.zeros((len(self._nodes),), dtype=np.int)
+        for patch in tqdm(self.patches, desc='get full mean embedding'):
+            nodes = patch.nodes
+            out[index[nodes]] += patch.coordinates
+            count[index[nodes]] += 1
+        return out
 
     def get_coordinates(self, nodes, out=None):
         nodes = np.asanyarray(nodes)

@@ -92,7 +92,7 @@ class LazyCoordinates(BaseLazyCoordinates):
         self._x = x
         dim = self.shape[1]
         if shift is None:
-            self._shift = np.zeros((1, dim))
+            self._shift = np.zeros((dim,))
         else:
             self._shift = np.array(shift)
 

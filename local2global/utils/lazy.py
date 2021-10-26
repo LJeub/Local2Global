@@ -234,7 +234,7 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
             out = np.zeros((len(nodes), self._dim))
 
         count = np.zeros((len(nodes),), dtype=np.int)
-        for patch in tqdm(self.patches, position=0, leave=False, desc='get mean embedding'):
+        for patch in tqdm(self.patches, desc='get mean embedding'):
             index = [i for i, node in enumerate(nodes) if node in patch.index]
             count[index] += 1
             out[index] += patch.get_coordinates(nodes[index])

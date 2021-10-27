@@ -82,8 +82,7 @@ class Patch:
     def __copy__(self):
         """return a copy of the patch"""
         instance = self.__new__(type(self))
-        instance.index = self.index
-        instance.nodes = self.nodes
+        instance.__dict__.update(self.__dict__)
         instance.coordinates = copy.copy(self.coordinates)
         return instance
 

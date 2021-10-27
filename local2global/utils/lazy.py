@@ -114,7 +114,11 @@ class LazyCoordinates(BaseLazyCoordinates):
         return self._x.shape
 
     def __copy__(self):
-        return self.__class__(self._x, self._shift, self._scale, self._rot)
+        new = self.__class__(self._x, self._shift, self._scale, self._rot)
+        for key, value in self.__dict__.items():
+            if key not in new.__dict__:
+                new.__dict__[key] = value
+        return new
 
     def __iadd__(self, other):
         self._shift += other
@@ -176,7 +180,11 @@ class LazyFileCoordinates(LazyCoordinates):
         return self._shape
 
     def __copy__(self):
-        return self.__class__(self.filename, self._shift, self._scale, self._rot)
+        new = self.__class__(self.filename, self._shift, self._scale, self._rot)
+        for key, value in self.__dict__.items():
+            if key not in new.__dict__:
+                new.__dict__[key] = value
+        return new
 
 
 class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
@@ -268,9 +276,8 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
 
     def __copy__(self):
         new = self.__new__(type(self))
+        new.__dict__.update(self.__dict__)
         new.patches = [copy.copy(patch) for patch in self.patches]
-        new._nodes = self._nodes
-        new._dim = self._dim
         return new
 
     def __repr__(self):

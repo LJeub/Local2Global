@@ -92,6 +92,21 @@ def procrustes_error(coordinates1, coordinates2):
     return procrustes(coordinates1, coordinates2)[2]
 
 
+def local_error(patch: Patch, reference_coordinates):
+    """
+    compute the euclidean distance between patch coordinate and reference
+    coordinate for each node in patch
+
+    Args:
+        patch:
+        reference_coordinates:
+
+    Returns:
+        vector of error values
+    """
+    return np.linalg.norm(patch.coordinates - reference_coordinates[patch.nodes, :], axis=1)
+
+
 def transform_error(transforms):
     """
     Compute the recovery error based on tracked transformations.

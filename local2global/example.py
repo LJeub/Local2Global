@@ -3,21 +3,22 @@
 """Generate synthetic test data"""
 
 import csv
+from copy import copy
+from os import path
+from collections import Counter
+from pathlib import Path
+from statistics import mean
+from collections.abc import Iterable
 
-import local2global.utils.patch
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from scipy.spatial import procrustes
 from sklearn.cluster import KMeans
-from statistics import mean
-from collections.abc import Iterable
-from local2global import utils as ut
-from copy import copy
-from os import path
-from collections import Counter
 import networkx as nx
-from pathlib import Path
+
+from local2global import utils as ut
+from local2global import Patch
 
 
 def generate_data(n_clusters, scale=1.0, std=0.5, max_size=200, min_size=10, dim=2):
@@ -198,9 +199,9 @@ def Voronoi_patches(points, sample_size=100, min_degree=None, min_overlap=None, 
                 break
 
     if return_graph:
-        return [local2global.utils.patch.Patch(nodes, points[nodes, :]) for nodes in node_lists], patch_network
+        return [Patch(nodes, points[nodes, :]) for nodes in node_lists], patch_network
     else:
-        return [local2global.utils.patch.Patch(nodes, points[nodes, :]) for nodes in node_lists]
+        return [Patch(nodes, points[nodes, :]) for nodes in node_lists]
 
 
 def rand_scale_patches(alignment_problem: ut.AlignmentProblem, min_scale=1e-2):

@@ -608,6 +608,10 @@ class WeightedAlignmentProblem(AlignmentProblem):
 
 
 class SVDAlignmentProblem(WeightedAlignmentProblem):
+    def __init__(self, *args, tol=1e-6, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.tol = tol
+
     def calc_synchronised_rotations(self):
         """Compute the orthogonal transformations that best align the patches"""
         rots = self._transform_matrix(relative_orthogonal_transform, self.dim, symmetric_weights=False)
@@ -636,48 +640,42 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 eigs, vecs = ss.linalg.eigsh(matrix, which='LM', k=blocksize, v0=np.ones(dim), maxiter=10000, sigma=0.9,
                                              mode='buckling')
             else:
-                tol = np.sqrt(eps)*blocksize
-                # tol = 0.1
-                print(tol)
-                pre_factor = 0
-                post_factor = 0
-                matrix = matrix.tocsc(copy=False) + (pre_factor-1)*ss.identity(dim)
+                matrix = matrix.tocsc(copy=False) - ss.identity(dim)
 
-                v0 = rg.normal(size=(dim, blocksize))
+
                 # v0 = np.tile(np.eye(blocksize), (dim // blocksize, 1))
 
                 def matmat(x):
-                    x1 = matrix.T @ x - pre_factor * x
-                    return matrix @ x1 - pre_factor * x1
-                B_op = ss.linalg.LinearOperator((dim, dim), matvec=matmat, matmat=matmat, rmatmat=matmat)
+                    x1 = matrix.T @ x
+                    return matrix @ x1
+                B_op = ss.linalg.LinearOperator((dim, dim), matvec=matmat, matmat=matmat, rmatmat=matmat, rmatvec=matmat)
 
                 if self.verbose:
                     print('computing ilu')
                 # ILU helps but maybe could do better
                 # fill_in = 100
                 if dim < 8000:
-                    print('using ILUpp')
-                    # use more effective but harder to compute preconditioner
-                    param = ilupp.iluplusplus_precond_parameter()
-                    param.default_configuration(10)
-                    ilu = ilupp.ILUppPreconditioner(matrix, params=param)
+                    ilu = ss.linalg.spilu(matrix + 1e-8*ss.rand(dim, dim, 1/dim, format='csr', random_state=rg))
+                    M = ss.linalg.LinearOperator((dim, dim), matvec=lambda x: ilu.solve(ilu.solve(x), 'T'))
                 else:
                     print('using ILU0')
                     ilu = ilupp.ILU0Preconditioner(matrix)
 
-                def cond_solve(x):
-                    y = x.copy()
-                    ilu.apply(y)
-                    ilu.apply_trans(y)
-                    return y + post_factor*y
+                    def cond_solve(x):
+                        y = x.copy()
+                        ilu.apply(y)
+                        ilu.apply_trans(y)
+                        return y
 
-                M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve)
+                    M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve)
                 #
                 # TODO: could use pytorch implementation to run this on GPU
                 if self.verbose:
                     print('finding eigenvectors')
+                #
+                v0 = rg.normal(size=(dim, blocksize))
                 eigs, vecs = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=500,
-                                              verbosityLevel=self.verbose, tol=tol)
+                                          verbosityLevel=self.verbose, tol=self.tol)
                 # eigs, vecs = ss.linalg.lobpcg(B_op, v0, largest=False, maxiter=500,
                 #                               verbosityLevel=self.verbose, tol=tol)
         if self.verbose:

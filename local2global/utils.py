@@ -681,10 +681,10 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                 #
                 v0 = rg.normal(size=(dim, blocksize))
                 M = self._preconditioner(matrix, self.tol)
-                max_tries = 100
+                max_tries = 5
                 for _ in range(max_tries):
                     try:
-                        eigs, vecs, res = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=10,
+                        eigs, vecs, res = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=blocksize,
                                                   verbosityLevel=self.verbose, tol=self.tol, retResidualNormsHistory=True)
                         if res[-1].max() > self.tol:
                             v0 = vecs + rg.normal(size=vecs.shape, scale=self.tol)

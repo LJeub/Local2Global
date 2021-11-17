@@ -99,7 +99,7 @@ def Voronoi_patches(points, sample_size=100, min_degree=None, min_overlap=None, 
 
     # Find patch centers
     if kmeans:
-        k_means = KMeans(n_clusters=sample_size)
+        k_means = KMeans(n_clusters=sample_size, random_state=ut.rg.integers(2**32 - 1))
         k_means.fit(points)
         centers = k_means.cluster_centers_
     else:

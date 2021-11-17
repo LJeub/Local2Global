@@ -694,7 +694,7 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                     except ValueError as e:
                         print(f'LOBPCG failed with error {e}, retrying with noise in preconditioner')
                         M = self._preconditioner(matrix, self.tol)
-
+                        v0 += rg.normal(size=v0.shape, scale=self.tol)
                 else:  # LOBPCG still failed after max_tries
                     raise RuntimeError(f'LOBPCG still failed after {max_tries=} initialisations')
 

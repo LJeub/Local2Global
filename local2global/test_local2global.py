@@ -23,7 +23,7 @@ print(_seed.entropy)
 @pytest.fixture(autouse=True)
 def seed():
     ut.seed(_seed)
-    print(_seed.entropy)
+    print(f'seed: {_seed.entropy}')
 
 
 def iter_seed(it):

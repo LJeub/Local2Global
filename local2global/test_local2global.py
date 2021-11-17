@@ -36,7 +36,7 @@ noise_scales = np.linspace(0, 0.1, 11)[1:]
 test_classes = [ut.AlignmentProblem,  ut.WeightedAlignmentProblem, ut.SVDAlignmentProblem]
 dim = [2, 4, 8]
 min_overlap = [d + 1 for d in dim]
-tol = 1e-6
+tol = 1e-5  # Note LOBPCG is not that accurate
 
 # test data
 points_list = [ex.generate_data(n_clusters=5, scale=1, std=0.2, max_size=2000, dim=d) for d in dim]

@@ -104,7 +104,7 @@ def local_error(patch: Patch, reference_coordinates):
     Returns:
         vector of error values
     """
-    return np.linalg.norm(patch.coordinates - reference_coordinates[patch.nodes, :], axis=1)
+    return np.linalg.norm(reference_coordinates[patch.nodes, :] - patch.coordinates, axis=1)
 
 
 def transform_error(transforms):

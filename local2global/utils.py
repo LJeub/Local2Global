@@ -633,9 +633,14 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
     @staticmethod
     def _preconditioner(matrix, noise_level=1e-8):
         dim = matrix.shape[0]
-        if dim < 8000:
+
+        if dim < 20000:
             ilu = ss.linalg.spilu(matrix + noise_level*ss.rand(dim, dim, 1/dim, format='csc', random_state=rg))
-            M = ss.linalg.LinearOperator((dim, dim), matvec=lambda x: ilu.solve(ilu.solve(x), 'T'))
+
+            def cond_solve(x):
+                return ilu.solve(ilu.solve(x), 'T')
+
+            M = ss.linalg.LinearOperator((dim, dim), matvec=cond_solve, matmat=cond_solve)
         else:
             print('using ILU0')
             ilu = ilupp.ILU0Preconditioner(matrix + noise_level*ss.rand(dim, dim, 1/dim, format='csc', random_state=rg))
@@ -697,14 +702,17 @@ class SVDAlignmentProblem(WeightedAlignmentProblem):
                     try:
                         eigs, vecs, res = ss.linalg.lobpcg(B_op, v0, M=M, largest=False, maxiter=max_iter,
                                                   verbosityLevel=self.verbose, tol=self.tol, retResidualNormsHistory=True)
-                        if res[-1].max() > self.tol:
-                            v0 = vecs + rg.normal(size=vecs.shape, scale=self.tol)
-                        else:
-                            break
                     except ValueError as e:
                         print(f'LOBPCG failed with error {e}, retrying with noise in preconditioner')
                         M = self._preconditioner(matrix, self.tol)
                         v0 += rg.normal(size=v0.shape, scale=self.tol)
+                        eigs, vecs, res = ss.linalg.lobpcg(B_op, v0, largest=False, maxiter=max_iter,
+                                                           verbosityLevel=self.verbose, tol=self.tol,
+                                                           retResidualNormsHistory=True)
+                    if res[-1].max() > self.tol:
+                        v0 = vecs + rg.normal(size=vecs.shape, scale=self.tol)
+                    else:
+                        break
                 else:  # LOBPCG still failed after max_tries
                     raise RuntimeError(f'LOBPCG still failed after {max_tries=} initialisations')
 

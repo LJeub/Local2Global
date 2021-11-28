@@ -439,6 +439,16 @@ class AlignmentProblem:
 
         return embedding
 
+    def median_embedding(self, out=None):
+        if out is None:
+            out = np.full((self.n_nodes, self.dim), np.nan)
+
+        for i, pids in tqdm(enumerate(self.patch_index), total=self.n_nodes, desc='Compute median embedding for node'):
+            if pids:
+                points = np.array([self.patches[pid].get_coordinate(i) for pid in pids])
+                out[i] = np.median(points, axis=0)
+        return out
+
     def align_patches(self, scale=False):
         if scale:
             self.scale_patches()

@@ -237,6 +237,7 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
             nodes = patch.nodes
             out[index[nodes]] += patch.coordinates
             count[index[nodes]] += 1
+        out /= count[:, None]
         return out
 
     def get_coordinates(self, nodes, out=None):

@@ -92,55 +92,55 @@ class LazyCoordinates(BaseLazyCoordinates):
         self._x = x
         dim = self.shape[1]
         if shift is None:
-            self._shift = np.zeros((dim,))
+            self.shift = np.zeros((1, dim))
         else:
-            self._shift = np.array(shift)
+            self.shift = np.array(shift).reshape((1, dim))
 
         if scale is None:
-            self._scale = 1
+            self.scale = 1
         else:
-            self._scale = scale
+            self.scale = scale
 
         if rot is None:
-            self._rot = np.eye(dim)
+            self.rot = np.eye(dim)
         else:
-            self._rot = np.array(rot)
+            self.rot = np.array(rot)
 
     def save_transform(self, filename):
-        np.savez(filename, shift=self._shift, scale=self._scale, rot=self._rot)
+        np.savez(filename, shift=self.shift, scale=self.scale, rot=self.rot)
 
     @property
     def shape(self):
         return self._x.shape
 
     def __copy__(self):
-        new = self.__class__(self._x, self._shift, self._scale, self._rot)
+        new = self.__class__(self._x, self.shift, self.scale, self.rot)
         for key, value in self.__dict__.items():
             if key not in new.__dict__:
                 new.__dict__[key] = value
         return new
 
     def __iadd__(self, other):
-        self._shift += other
+        self.shift += other
         return self
 
     def __isub__(self, other):
-        self._shift -= other
+        self.shift -= other
         return self
 
     def __imul__(self, other):
-        self._scale *= other
-        self._shift *= other
+        self.scale *= other
+        self.shift *= other
         return self
 
     def __itruediv__(self, other):
-        self._scale /= other
-        self._shift /= other
+        self.scale /= other
+        self.shift /= other
         return self
 
     def __imatmul__(self, other):
-        self._rot = self._rot @ other
-        self._shift = self._shift @ other
+        self.rot = self.rot @ other
+        self.shift = self.shift @ other
         return self
 
     def __getitem__(self, item):
@@ -148,11 +148,14 @@ class LazyCoordinates(BaseLazyCoordinates):
             x = self._x[item[0]]
         else:
             x = self._x[item]
-        x = x * self._scale
-        x = x @ self._rot
-        x += self._shift
+        x = x * self.scale
+        x = x @ self.rot
+        x += self.shift
         if isinstance(item, tuple):
-            return x[(slice(None), *item[1:])]
+            if x.ndim > 1:
+                return x[(slice(None), *item[1:])]
+            else:
+                return x[item[1]]
         return x
 
     def __repr__(self):
@@ -180,7 +183,7 @@ class LazyFileCoordinates(LazyCoordinates):
         return self._shape
 
     def __copy__(self):
-        new = self.__class__(self.filename, self._shift, self._scale, self._rot)
+        new = self.__class__(self.filename, self.shift, self.scale, self.rot)
         for key, value in self.__dict__.items():
             if key not in new.__dict__:
                 new.__dict__[key] = value
@@ -196,23 +199,23 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
                 self.patches.extend(patch.coordinates.patches)
             else:
                 self.patches.append(patch)
-        self._dim = patches[0].shape[1]
-        self._nodes = set()
+        self.dim = patches[0].shape[1]
+        self.nodes = set()
         for patch in patches:
-            self._nodes.update(patch.nodes)
+            self.nodes.update(patch.nodes)
 
-        self._nodes = np.array(sorted(self._nodes))
+        self.nodes = np.array(sorted(self.nodes))
 
     @property
     def shape(self):
-        return len(self._nodes), self._dim
+        return len(self.nodes), self.dim
 
     def __getitem__(self, item):
         if isinstance(item, tuple):
             item, *others = item
         else:
             others = ()
-        nodes = self._nodes[item]
+        nodes = self.nodes[item]
         out = self.get_coordinates(nodes)
         if others:
             return out[(slice(None), *others)]
@@ -227,9 +230,9 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
     def as_array(self, out=None):
         if out is None:
             out = np.zeros(self.shape)
-        index = np.empty((self._nodes.max()+1,), dtype=np.int64)
-        index[self._nodes] = np.arange(len(self._nodes))
-        count = np.zeros((len(self._nodes),), dtype=np.int)
+        index = np.empty((self.nodes.max() + 1,), dtype=np.int64)
+        index[self.nodes] = np.arange(len(self.nodes))
+        count = np.zeros((len(self.nodes),), dtype=np.int)
         for patch in tqdm(self.patches, desc='get full mean embedding'):
             nodes = patch.nodes
             out[index[nodes]] += patch.coordinates
@@ -239,7 +242,7 @@ class LazyMeanAggregatorCoordinates(BaseLazyCoordinates):
     def get_coordinates(self, nodes, out=None):
         nodes = np.asanyarray(nodes)
         if out is None:
-            out = np.zeros((len(nodes), self._dim))
+            out = np.zeros((len(nodes), self.dim))
 
         count = np.zeros((len(nodes),), dtype=np.int)
         for patch in tqdm(self.patches, desc='get mean embedding'):

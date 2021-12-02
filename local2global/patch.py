@@ -91,7 +91,11 @@ class Patch:
 class MeanAggregatorPatch(Patch):
     def __init__(self, patches):
         coordinates = LazyMeanAggregatorCoordinates(patches)
-        super().__init__(coordinates._nodes, coordinates)
+        super().__init__(coordinates.nodes, coordinates)
+
+    @property
+    def patches(self):
+        return self.coordinates.patches
 
     def get_coordinate(self, node):
         # avoid double index conversion

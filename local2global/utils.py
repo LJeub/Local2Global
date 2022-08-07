@@ -432,7 +432,7 @@ class AlignmentProblem:
             embedding = out  # important: needs to be zero-initialised
 
         count = np.array([len(patch_list) for patch_list in self.patch_index])
-        for patch in tqdm(self.patches, smoothing=0, desc='Compute mean embedding'):
+        for patch in tqdm(self.patches, smoothing=0, desc='Compute mean embedding', disable=self.verbose):
             embedding[patch.nodes] += patch.coordinates
 
         embedding /= count[:, None]
@@ -443,7 +443,7 @@ class AlignmentProblem:
         if out is None:
             out = np.full((self.n_nodes, self.dim), np.nan)
 
-        for i, pids in tqdm(enumerate(self.patch_index), total=self.n_nodes, desc='Compute median embedding for node'):
+        for i, pids in tqdm(enumerate(self.patch_index), total=self.n_nodes, desc='Compute median embedding for node', disable=self.verbose):
             if pids:
                 points = np.array([self.patches[pid].get_coordinate(i) for pid in pids])
                 out[i] = np.median(points, axis=0)
@@ -568,7 +568,7 @@ class AlignmentProblem:
         keys = sorted(self.patch_overlap.keys())
         # TODO: this could be sped up by a factor of two by not computing rotations twice
         for count, (i, j) in tqdm(enumerate(keys), total=len(keys),
-                                  desc='Compute relative transformations'):
+                                  desc='Compute relative transformations', disable=self.verbose):
             if i == j:
                 element = np.eye(dim)
             else:

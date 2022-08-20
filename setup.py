@@ -17,5 +17,6 @@ setup(
         'matplotlib',
         'networkx',
         'scikit-learn',
+        'ilupp'
     ],
 )
